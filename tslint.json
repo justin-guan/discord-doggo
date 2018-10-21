@@ -1,0 +1,82 @@
+{
+    "extends": [
+      "tslint:latest",
+      "tslint-plugin-prettier",
+      "tslint-config-prettier"
+    ],
+    "rules": {
+      "prettier": true,
+      "cyclomatic-complexity": [true],
+      "curly": [true, "ignore-same-line"],
+      "triple-equals": true,
+      "adjacent-overload-signatures": true,
+      "member-access": true,
+      "no-any": true,
+      "no-empty-interface": true,
+      "no-internal-module": true,
+      "no-magic-numbers": true,
+      "no-parameter-reassignment": true,
+      "no-reference": true,
+      "only-arrow-functions": [true, "allow-named-functions"],
+      "prefer-for-of": true,
+      "no-empty": true,
+      "no-invalid-this": false,
+      "no-construct": true,
+      "no-unused-new": true,
+      "no-unused-expression": true,
+      "no-shadowed-variable": true,
+      "no-console": true,
+      "no-submodule-imports": false,
+      "handle-callback-err": [true, "error"],
+      "block-spacing": [false, "always"],
+      "variable-name": [
+        true,
+        "ban-keywords",
+        "check-format",
+        "allow-leading-underscore",
+        "allow-pascal-case"
+      ],
+      "trailing-comma": [false],
+      "no-bitwise": false,
+      "object-literal-sort-keys": false,
+      "object-literal-shorthand": true,
+      "semicolon": [false, "always"],
+      "comment-format": [
+        true,
+        "check-lowercase",
+        { "ignore-words": ["TODO", "HACK"] }
+      ],
+      "ter-arrow-body-style": [true, "as-needed"],
+      "ter-prefer-arrow-callback": [true],
+      "no-conditional-assignment": true,
+      "no-duplicate-case": true,
+      "valid-typeof": true,
+      "switch-default": true,
+      "no-eval": true,
+      "no-duplicate-variable": true,
+      "no-use-before-declare": true,
+      "ter-max-len": [false],
+      "max-line-length": [false],
+      "no-var-keyword": true,
+      "prefer-const": true,
+      "no-for-in-array": true,
+      "no-angle-bracket-type-assertion": true,
+      "no-var-requires": true,
+      "no-implicit-dependencies": false,
+      "class-name": true,
+      "one-variable-per-declaration": [true],
+      "ordered-imports": [
+        true,
+        {
+          "import-sources-order": "lowercase-first",
+          "named-imports-order": "lowercase-first"
+        }
+      ],
+      "use-isnan": true,
+      "array-type": [true, "array-simple"],
+      "interface-name": [true, "never-prefix"],
+      "radix": false,
+      "typedef": [true, "call-signature", "property-declaration"]
+    }
+  }
+  
