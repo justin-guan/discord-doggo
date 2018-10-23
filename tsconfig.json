@@ -14,7 +14,11 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "baseUrl": "src",
-    "paths": {},
+    "paths": {
+      "@logger": ["logger/logger"],
+      "@config": ["config/config"],
+      "@messenger/*": ["messenger/*"]
+    },
     "esModuleInterop": true,
     "experimentalDecorators": true
   },
