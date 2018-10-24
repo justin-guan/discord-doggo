@@ -1,7 +1,12 @@
 import { Message } from "@handlers/base/message-handler";
 import { DiscordMessageHandler } from "@handlers/discord/discord-message-handler";
 import { MessageSender } from "@messenger/base/message-sender";
+import * as Chai from "chai";
+import * as ChaiAsPromised from "chai-as-promised";
 import * as TypeMoq from "typemoq";
+
+const expect = Chai.expect;
+Chai.use(ChaiAsPromised.default);
 
 describe("Discord Message Handler", () => {
   let handler: DiscordMessageHandler;
@@ -12,32 +17,74 @@ describe("Discord Message Handler", () => {
   beforeEach(() => {
     handler = new DiscordMessageHandler();
     mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();
-    const promise: Promise<void> = Promise.resolve();
-    mockMessageSender
-      .setup(s => s.sendMessage(TypeMoq.It.isAnyString()))
-      .returns(() => promise);
   });
 
-  it("should reply with the same message", async () => {
-    const testMessage = createTestMessage(false);
+  describe("Promise resolved", () => {
+    beforeEach(() => {
+      mockMessageSender
+        .setup(s => s.sendMessage(TypeMoq.It.isAnyString()))
+        .returns(() => Promise.resolve());
+    });
 
-    await handler.handleMessage(mockMessageSender.object, testMessage);
+    it("should reply with the same message", async () => {
+      const testMessage = createTestMessage(false);
 
-    mockMessageSender.verify(
-      sender => sender.sendMessage(testMessageContent),
-      TypeMoq.Times.once()
-    );
+      await handler.handleMessage(mockMessageSender.object, testMessage);
+
+      mockMessageSender.verify(
+        sender => sender.sendMessage(testMessageContent),
+        TypeMoq.Times.once()
+      );
+    });
+
+    it("should not send a response message", async () => {
+      const testMessage = createTestMessage(true);
+
+      await handler.handleMessage(mockMessageSender.object, testMessage);
+
+      mockMessageSender.verify(
+        sender => sender.sendMessage(TypeMoq.It.isAny()),
+        TypeMoq.Times.never()
+      );
+    });
   });
 
-  it("should not send a response message", async () => {
-    const testMessage = createTestMessage(true);
+  describe("Promise rejected", () => {
+    beforeEach(() => {
+      mockMessageSender
+        .setup(s => s.sendMessage(TypeMoq.It.isAnyString()))
+        .returns(() => Promise.reject());
+    });
 
-    await handler.handleMessage(mockMessageSender.object, testMessage);
+    it("should fail to reply", async () => {
+      const testMessage = createTestMessage(false);
 
-    mockMessageSender.verify(
-      sender => sender.sendMessage(TypeMoq.It.isAny()),
-      TypeMoq.Times.never()
-    );
+      const result = handler.handleMessage(
+        mockMessageSender.object,
+        testMessage
+      );
+
+      mockMessageSender.verify(
+        sender => sender.sendMessage(TypeMoq.It.isAny()),
+        TypeMoq.Times.once()
+      );
+      return expect(result).to.eventually.rejected;
+    });
+
+    it("should not send a response message", async () => {
+      const testMessage = createTestMessage(true);
+
+      const result = handler.handleMessage(
+        mockMessageSender.object,
+        testMessage
+      );
+
+      mockMessageSender.verify(
+        sender => sender.sendMessage(TypeMoq.It.isAny()),
+        TypeMoq.Times.never()
+      );
+      return expect(result).to.eventually.equal(undefined);
+    });
   });
 
   function createTestMessage(userIsBot: boolean): Message {
