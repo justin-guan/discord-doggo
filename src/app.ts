@@ -1,5 +1,5 @@
 import { discordToken } from "@config";
-import messenger from "@messenger/discord-messenger";
+import messenger from "@messenger/discord/discord-messenger";
 
 (async () => {
   await messenger.start(discordToken);

@@ -1,4 +1,4 @@
-import { VoiceSender } from "@messenger/message-sender";
+import { VoiceSender } from "@messenger/base/message-sender";
 
 export interface VoiceStateHandler {
   handleVoiceStateUpdate(

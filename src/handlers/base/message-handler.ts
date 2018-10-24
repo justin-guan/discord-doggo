@@ -1,4 +1,4 @@
-import { MessageSender } from "@messenger/message-sender";
+import { MessageSender } from "@messenger/base/message-sender";
 
 export interface MessageHandler {
   handleMessage(sender: MessageSender, message: Message): Promise<void>;

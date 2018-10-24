@@ -1,5 +1,5 @@
-import { Message, MessageHandler } from "@handlers/message-handler";
-import { MessageSender } from "@messenger/message-sender";
+import { Message, MessageHandler } from "@handlers/base/message-handler";
+import { MessageSender } from "@messenger/base/message-sender";
 
 export class DiscordMessageHandler implements MessageHandler {
   public async handleMessage(

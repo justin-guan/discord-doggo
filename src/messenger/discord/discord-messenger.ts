@@ -1,8 +1,8 @@
-import { DiscordMessageHandler } from "@handlers/discord-message-handler";
-import { Message } from "@handlers/message-handler";
+import { Message } from "@handlers/base/message-handler";
+import { DiscordMessageHandler } from "@handlers/discord/discord-message-handler";
 import logger from "@logger";
-import { DiscordMessageSender } from "@messenger/discord-message-sender";
-import Messenger from "@messenger/messenger";
+import Messenger from "@messenger/base/messenger";
+import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
 import { Client, Message as DiscordMessage } from "discord.js";
 
 class DiscordMessenger implements Messenger {

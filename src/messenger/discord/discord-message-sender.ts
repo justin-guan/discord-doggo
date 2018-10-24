@@ -1,4 +1,4 @@
-import { MessageSender } from "@messenger/message-sender";
+import { MessageSender } from "@messenger/base/message-sender";
 import { PartialTextBasedChannelFields } from "discord.js";
 
 export class DiscordMessageSender implements MessageSender {
