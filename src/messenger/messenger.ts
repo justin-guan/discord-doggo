@@ -1,4 +1,4 @@
 export default interface Messenger {
-  login(token: string): Promise<void>;
-  start(): void;
+  start(token: string): Promise<void>;
+  stop(): Promise<void>;
 }

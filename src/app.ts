@@ -1,7 +1,18 @@
 import { discordToken } from "@config";
-import DiscordMessenger from "@messenger/discord-messenger";
+import messenger from "@messenger/discord-messenger";
 
 (async () => {
-  await DiscordMessenger.login(discordToken);
-  DiscordMessenger.start();
+  await messenger.start(discordToken);
 })();
+
+process.on("SIGINT", async () => {
+  await messenger.stop();
+});
+
+process.on("SIGTERM", async () => {
+  await messenger.stop();
+});
+
+process.on("SIGQUIT", async () => {
+  await messenger.stop();
+});

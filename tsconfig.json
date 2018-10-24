@@ -17,7 +17,8 @@
     "paths": {
       "@logger": ["logger/logger"],
       "@config": ["config/config"],
-      "@messenger/*": ["messenger/*"]
+      "@messenger/*": ["messenger/*"],
+      "@handlers/*": ["handlers/*"]
     },
     "esModuleInterop": true,
     "experimentalDecorators": true
