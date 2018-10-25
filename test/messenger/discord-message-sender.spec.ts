@@ -25,7 +25,7 @@ describe("Discord Message Sender", () => {
         .returns(() => Promise.resolve(mockMessage.object));
     });
 
-    it("should send a message to a discord text channel", async () => {
+    test("should send a message to a discord text channel", async () => {
       await discordMessageSender.sendMessage(testMessage);
 
       mockChannel.verify(
@@ -43,7 +43,7 @@ describe("Discord Message Sender", () => {
         .returns(() => Promise.resolve(mockMessage.object));
     });
 
-    it("should fail to send a message to a discord text channel", async () => {
+    test("should fail to send a message to a discord text channel", async () => {
       await discordMessageSender.sendMessage(testMessage);
 
       mockChannel.verify(

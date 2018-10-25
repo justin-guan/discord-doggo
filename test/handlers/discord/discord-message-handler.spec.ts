@@ -26,7 +26,7 @@ describe("Discord Message Handler", () => {
         .returns(() => Promise.resolve());
     });
 
-    it("should reply with the same message", async () => {
+    test("should reply with the same message", async () => {
       const testMessage = createTestMessage(false);
 
       await handler.handleMessage(mockMessageSender.object, testMessage);
@@ -37,7 +37,7 @@ describe("Discord Message Handler", () => {
       );
     });
 
-    it("should not send a response message", async () => {
+    test("should not send a response message", async () => {
       const testMessage = createTestMessage(true);
 
       await handler.handleMessage(mockMessageSender.object, testMessage);
@@ -56,7 +56,7 @@ describe("Discord Message Handler", () => {
         .returns(() => Promise.reject());
     });
 
-    it("should fail to reply", async () => {
+    test("should fail to reply", async () => {
       const testMessage = createTestMessage(false);
 
       const result = handler.handleMessage(
@@ -71,7 +71,7 @@ describe("Discord Message Handler", () => {
       return expect(result).to.eventually.rejected;
     });
 
-    it("should not send a response message", async () => {
+    test("should not send a response message", async () => {
       const testMessage = createTestMessage(true);
 
       const result = handler.handleMessage(

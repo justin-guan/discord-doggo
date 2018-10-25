@@ -1,5 +1,7 @@
 import DiscordMessenger from "@messenger/discord/discord-messenger";
 
 describe("Discord Messenger", () => {
-  it("should set up the client listeners and log in", () => {});
+  test("should set up the client listeners and log in", () => {
+    expect(1).toBe(1);
+  });
 });
