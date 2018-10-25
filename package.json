@@ -7,7 +7,7 @@
     "build": "npx webpack --mode none --progress --colors",
     "prestart": "npm run build",
     "start": "node dist/app.js",
-    "test": "npx ts-mocha --paths tsconfig.json test/**/*.spec.ts"
+    "test": "npx mocha -r ts-node/register -r tsconfig-paths/register 'test/**/*.spec.ts'"
   },
   "keywords": [
     "Discord",
@@ -28,7 +28,7 @@
     "clean-webpack-plugin": "^0.1.19",
     "mocha": "^5.2.0",
     "prettier": "^1.14.3",
-    "ts-mocha": "^2.0.0",
+    "ts-node": "^7.0.1",
     "tsconfig-paths": "^3.6.0",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
     "tslint": "^5.11.0",
