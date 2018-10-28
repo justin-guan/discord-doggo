@@ -4,3 +4,4 @@ dist
 ENV.sh
 .nyc_output
 coverage
+logs.log
