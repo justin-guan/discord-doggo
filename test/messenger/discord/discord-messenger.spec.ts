@@ -18,33 +18,34 @@ describe("Discord Messenger", () => {
     onMock.mockReset();
   });
 
-  test("should set up the client listeners and log in", () => {
+  test("should set up the client listeners and log in", async () => {
     loginMock.mockImplementation(() => {
       return Promise.resolve();
     });
 
     const result = DiscordMessenger.start(TEST_DISCORD_TOKEN);
 
-    expect(result).resolves.toBeUndefined();
-    expect(loginMock).toBeCalledTimes(LOGIN_CALL_AMOUNT);
-    expect(loginMock).toBeCalledWith(TEST_DISCORD_TOKEN);
-    expect(onMock).toBeCalledTimes(LISTENER_SETUP_AMOUNT);
-    expect(onMock).toBeCalledWith(READY_EVENT, expect.any(Function));
-    expect(onMock).toBeCalledWith(MESSAGE_EVENT, expect.any(Function));
+    await expect(result).resolves.toBeUndefined();
+    assertGoodSetup();
   });
 
-  test("should set up the client listeners and fail to login", () => {
+  test("should set up the client listeners and fail to login", async () => {
+    const testError = new Error();
     loginMock.mockImplementation(() => {
-      return Promise.reject(new Error());
+      return Promise.reject(testError);
     });
 
     const result = DiscordMessenger.start(TEST_DISCORD_TOKEN);
 
-    expect(result).rejects.toBe(Error);
+    await expect(result).rejects.toBe(testError);
+    assertGoodSetup();
+  });
+
+  function assertGoodSetup(): void {
     expect(loginMock).toBeCalledTimes(LOGIN_CALL_AMOUNT);
     expect(loginMock).toBeCalledWith(TEST_DISCORD_TOKEN);
     expect(onMock).toBeCalledTimes(LISTENER_SETUP_AMOUNT);
     expect(onMock).toBeCalledWith(READY_EVENT, expect.any(Function));
     expect(onMock).toBeCalledWith(MESSAGE_EVENT, expect.any(Function));
-  });
+  }
 });
