@@ -6,5 +6,11 @@ module.exports = {
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   collectCoverage: true,
   collectCoverageFrom: ["src/**/*.ts"],
+  coveragePathIgnorePatterns: [
+    "node_modules",
+    "src/app.ts",
+    "src/config/config.ts",
+    "src/logger/logger.ts"
+  ],
   resolver: "jest-webpack-resolver"
 };
