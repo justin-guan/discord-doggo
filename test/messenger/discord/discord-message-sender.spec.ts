@@ -1,11 +1,6 @@
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
-import * as Chai from "chai";
-import * as ChaiAsPromised from "chai-as-promised";
 import { Message, PartialTextBasedChannelFields } from "discord.js";
 import * as TypeMoq from "typemoq";
-
-const expect = Chai.expect;
-Chai.use(ChaiAsPromised.default);
 
 describe("Discord Message Sender", () => {
   let discordMessageSender: DiscordMessageSender;
