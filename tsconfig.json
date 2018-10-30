@@ -18,7 +18,8 @@
       "@logger": ["logger/logger"],
       "@config": ["config/config"],
       "@messenger/*": ["messenger/*"],
-      "@handlers/*": ["handlers/*"]
+      "@handlers/*": ["handlers/*"],
+      "@model/*": ["model/*"]
     },
     "esModuleInterop": true,
     "experimentalDecorators": true

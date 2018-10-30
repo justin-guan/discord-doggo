@@ -5,6 +5,8 @@ const loginMock = jest.fn();
 Client.prototype.login = loginMock;
 const onMock = jest.fn();
 Client.prototype.on = onMock;
+const destroyMock = jest.fn();
+Client.prototype.destroy = destroyMock;
 
 const TEST_DISCORD_TOKEN = "test token";
 const LOGIN_CALL_AMOUNT = 1;
@@ -16,6 +18,7 @@ describe("Discord Messenger", () => {
   beforeEach(() => {
     loginMock.mockReset();
     onMock.mockReset();
+    destroyMock.mockReset();
   });
 
   test("should set up the client listeners and log in", async () => {
@@ -39,6 +42,22 @@ describe("Discord Messenger", () => {
 
     await expect(result).rejects.toBe(testError);
     assertGoodSetup();
+  });
+
+  test("should destroy client", async () => {
+    const result = DiscordMessenger.stop();
+
+    await expect(result).resolves.toBeUndefined();
+  });
+
+  test("should fail to destroy client", async () => {
+    const testError = new Error();
+    destroyMock.mockImplementation(() => {
+      return Promise.reject(testError);
+    });
+    const result = DiscordMessenger.stop();
+
+    await expect(result).rejects.toBe(testError);
   });
 
   function assertGoodSetup(): void {
