@@ -1,3 +1,9 @@
+jest.mock("discord.js", () => {
+  return {
+    Client: class {}
+  };
+});
+
 import DiscordMessenger from "@messenger/discord/discord-messenger";
 import { Client } from "discord.js";
 

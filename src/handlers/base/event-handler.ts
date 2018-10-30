@@ -11,8 +11,9 @@ export default class EventHandler {
     sender: MessageSender,
     message: Message
   ): Promise<void> {
-    if (!message.author.isBot) {
-      await sender.sendMessage(message.message);
+    if (message.author.isBot) {
+      return;
     }
+    await sender.sendMessage(message.message);
   }
 }
