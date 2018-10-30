@@ -1,8 +1,13 @@
 import { discordToken } from "@config";
+import logger = require("@logger");
 import messenger from "@messenger/discord/discord-messenger";
 
 (async () => {
-  await messenger.start(discordToken);
+  try {
+    await messenger.start(discordToken);
+  } catch (e) {
+    logger.error("Unable to login: Invalid discord token provided");
+  }
 })();
 
 process.on("SIGINT", async () => {
