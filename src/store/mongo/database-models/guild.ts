@@ -60,6 +60,14 @@ class StoreGuild implements Guild {
     this.guild = guild;
   }
 
+  public getId(): string {
+    return this.guild._id;
+  }
+
+  public getCommandPrefix(): string {
+    return this.guild.commandPrefix;
+  }
+
   public setCommandPrefix(newPrefix: string): void {
     this.guild.changeCommandPrefix(newPrefix);
   }

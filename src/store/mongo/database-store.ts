@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 export default class DatabaseStore implements Database {
   private database = mongoose.connection;
+  private cache = new Map<string, Guild>();
 
   public async connect(uri: string): Promise<void> {
     await mongoose.connect(
@@ -17,11 +18,20 @@ export default class DatabaseStore implements Database {
     this.database.close();
   }
 
-  public getAllGuilds(): Promise<Guild[]> {
-    return DatabaseGuildModel.Guild.findAllGuilds();
+  public async getAllGuilds(): Promise<Guild[]> {
+    const guilds = await DatabaseGuildModel.Guild.findAllGuilds();
+    guilds.forEach(value => {
+      this.cache.set(value.getId(), value);
+    });
+    return guilds;
   }
 
-  public getGuild(id: string): Promise<Guild> {
-    return DatabaseGuildModel.Guild.findGuild(id);
+  public async getGuild(id: string): Promise<Guild> {
+    let guild = this.cache.get(id);
+    if (!guild) {
+      guild = await DatabaseGuildModel.Guild.findGuild(id);
+      this.cache.set(id, guild);
+    }
+    return guild;
   }
 }
