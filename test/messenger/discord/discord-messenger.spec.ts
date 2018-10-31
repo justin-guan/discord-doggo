@@ -4,6 +4,7 @@ jest.mock("discord.js", () => {
   };
 });
 
+import { LoginInfo } from "@messenger/base/messenger";
 import DiscordMessenger from "@messenger/discord/discord-messenger";
 import { Client } from "discord.js";
 
@@ -14,11 +15,14 @@ Client.prototype.on = onMock;
 const destroyMock = jest.fn();
 Client.prototype.destroy = destroyMock;
 
-const TEST_DISCORD_TOKEN = "test token";
 const LOGIN_CALL_AMOUNT = 1;
 const LISTENER_SETUP_AMOUNT = 2;
 const READY_EVENT = "ready";
 const MESSAGE_EVENT = "message";
+const TEST_LOGIN_INFO: LoginInfo = {
+  messengerToken: "test token",
+  databaseUrl: ""
+};
 
 describe("Discord Messenger", () => {
   beforeEach(() => {
@@ -32,7 +36,7 @@ describe("Discord Messenger", () => {
       return Promise.resolve();
     });
 
-    const result = DiscordMessenger.start(TEST_DISCORD_TOKEN);
+    const result = DiscordMessenger.start(TEST_LOGIN_INFO);
 
     await expect(result).resolves.toBeUndefined();
     assertGoodSetup();
@@ -44,7 +48,7 @@ describe("Discord Messenger", () => {
       return Promise.reject(testError);
     });
 
-    const result = DiscordMessenger.start(TEST_DISCORD_TOKEN);
+    const result = DiscordMessenger.start(TEST_LOGIN_INFO);
 
     await expect(result).rejects.toBe(testError);
     assertGoodSetup();
@@ -68,7 +72,7 @@ describe("Discord Messenger", () => {
 
   function assertGoodSetup(): void {
     expect(loginMock).toBeCalledTimes(LOGIN_CALL_AMOUNT);
-    expect(loginMock).toBeCalledWith(TEST_DISCORD_TOKEN);
+    expect(loginMock).toBeCalledWith(TEST_LOGIN_INFO.messengerToken);
     expect(onMock).toBeCalledTimes(LISTENER_SETUP_AMOUNT);
     expect(onMock).toBeCalledWith(READY_EVENT, expect.any(Function));
     expect(onMock).toBeCalledWith(MESSAGE_EVENT, expect.any(Function));

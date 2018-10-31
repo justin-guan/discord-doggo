@@ -19,7 +19,8 @@
       "@config": ["config/config"],
       "@messenger/*": ["messenger/*"],
       "@handlers/*": ["handlers/*"],
-      "@model/*": ["model/*"]
+      "@model/*": ["model/*"],
+      "@store/*": ["store/*"]
     },
     "esModuleInterop": true,
     "experimentalDecorators": true
