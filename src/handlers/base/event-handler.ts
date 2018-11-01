@@ -26,8 +26,13 @@ export default class EventHandler {
       return;
     }
     const prefix = await this.store.getCommandPrefix(message.serverId);
-    if (message.message.startsWith(prefix)) {
-      await sender.sendMessage(message.message);
+    if (!message.message.startsWith(prefix)) {
+      return;
+    }
+    const commandName = message.message.replace(prefix, "").toLowerCase();
+    const command = await this.store.getCommand(message.serverId, commandName);
+    if (command) {
+      await command.execute(message, sender);
     }
   }
 }
