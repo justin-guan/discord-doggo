@@ -1,4 +1,3 @@
-import Guild from "@store/models/guild";
 import DatabaseStore from "@store/mongo/database-store";
 
 export default class Store {
@@ -16,6 +15,11 @@ export default class Store {
     const guild = await this.databaseStore.getGuild(update.guildId);
     guild.setCommandPrefix(update.newPrefix);
     await guild.save();
+  }
+
+  public async getCommandPrefix(guildId: string): Promise<string> {
+    const guild = await this.databaseStore.getGuild(guildId);
+    return guild.getCommandPrefix();
   }
 }
 
