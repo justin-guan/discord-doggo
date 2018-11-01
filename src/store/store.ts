@@ -17,8 +17,8 @@ export default class Store {
     await guild.save();
   }
 
-  public async getCommandPrefix(guildId: string): Promise<string> {
-    const guild = await this.databaseStore.getGuild(guildId);
+  public async getCommandPrefix(serverId: string): Promise<string> {
+    const guild = await this.databaseStore.getGuild(serverId);
     return guild.getCommandPrefix();
   }
 }

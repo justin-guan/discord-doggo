@@ -25,7 +25,7 @@ export default class EventHandler {
     if (message.author.isBot) {
       return;
     }
-    const prefix = await this.store.getCommandPrefix(message.guildId);
+    const prefix = await this.store.getCommandPrefix(message.serverId);
     if (message.message.startsWith(prefix)) {
       await sender.sendMessage(message.message);
     }
