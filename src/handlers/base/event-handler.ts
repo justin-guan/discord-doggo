@@ -29,7 +29,7 @@ export default class EventHandler {
     if (!message.message.startsWith(prefix)) {
       return;
     }
-    const commandName = message.message.replace(prefix, "").toLowerCase();
+    const commandName = message.message.replace(prefix, "");
     const command = await this.store.getCommand(message.serverId, commandName);
     if (command) {
       await command.execute(message, sender);

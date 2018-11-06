@@ -4,6 +4,7 @@ jest.mock("discord.js", () => {
   };
 });
 
+import DiscordEventHandler from "@handlers/discord/discord-event-handler";
 import { LoginInfo } from "@messenger/base/messenger";
 import DiscordMessenger from "@messenger/discord/discord-messenger";
 import { Client } from "discord.js";
@@ -12,8 +13,12 @@ const loginMock = jest.fn();
 Client.prototype.login = loginMock;
 const onMock = jest.fn();
 Client.prototype.on = onMock;
-const destroyMock = jest.fn();
-Client.prototype.destroy = destroyMock;
+const clientDestroyMock = jest.fn();
+Client.prototype.destroy = clientDestroyMock;
+const eventHandlerInitializeMock = jest.fn();
+DiscordEventHandler.prototype.initialize = eventHandlerInitializeMock;
+const eventHandlerDestroyMock = jest.fn();
+DiscordEventHandler.prototype.destroy = eventHandlerDestroyMock;
 
 const LOGIN_CALL_AMOUNT = 1;
 const LISTENER_SETUP_AMOUNT = 2;
@@ -28,18 +33,22 @@ describe("Discord Messenger", () => {
   beforeEach(() => {
     loginMock.mockReset();
     onMock.mockReset();
-    destroyMock.mockReset();
+    clientDestroyMock.mockReset();
+    eventHandlerInitializeMock.mockReset();
   });
 
   test("should set up the client listeners and log in", async () => {
     loginMock.mockImplementation(() => {
       return Promise.resolve();
     });
+    eventHandlerInitializeMock.mockImplementation(() => {
+      return Promise.resolve();
+    });
 
     const result = DiscordMessenger.start(TEST_LOGIN_INFO);
 
     await expect(result).resolves.toBeUndefined();
-    assertGoodSetup();
+    assertGoodClientSetup();
   });
 
   test("should set up the client listeners and fail to login", async () => {
@@ -51,10 +60,25 @@ describe("Discord Messenger", () => {
     const result = DiscordMessenger.start(TEST_LOGIN_INFO);
 
     await expect(result).rejects.toBe(testError);
-    assertGoodSetup();
+    assertGoodClientSetup();
   });
 
-  test("should destroy client", async () => {
+  test("should set up listeners and login but fail to initialize event handler", async () => {
+    const testError = new Error();
+    loginMock.mockImplementation(() => {
+      return Promise.resolve();
+    });
+    eventHandlerInitializeMock.mockImplementation(() => {
+      return Promise.reject(testError);
+    });
+
+    const result = DiscordMessenger.start(TEST_LOGIN_INFO);
+
+    await expect(result).rejects.toBe(testError);
+    assertGoodClientSetup();
+  });
+
+  test("should destroy client and event handlers", async () => {
     const result = DiscordMessenger.stop();
 
     await expect(result).resolves.toBeUndefined();
@@ -62,15 +86,27 @@ describe("Discord Messenger", () => {
 
   test("should fail to destroy client", async () => {
     const testError = new Error();
-    destroyMock.mockImplementation(() => {
+    clientDestroyMock.mockImplementation(() => {
       return Promise.reject(testError);
     });
+
     const result = DiscordMessenger.stop();
 
     await expect(result).rejects.toBe(testError);
   });
 
-  function assertGoodSetup(): void {
+  test("should fail to destroy event handler", async () => {
+    const testError = new Error();
+    eventHandlerDestroyMock.mockImplementation(() => {
+      return Promise.reject(testError);
+    });
+
+    const result = DiscordMessenger.stop();
+
+    await expect(result).rejects.toBe(testError);
+  });
+
+  function assertGoodClientSetup(): void {
     expect(loginMock).toBeCalledTimes(LOGIN_CALL_AMOUNT);
     expect(loginMock).toBeCalledWith(TEST_LOGIN_INFO.messengerToken);
     expect(onMock).toBeCalledTimes(LISTENER_SETUP_AMOUNT);
