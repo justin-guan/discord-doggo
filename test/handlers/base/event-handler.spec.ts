@@ -20,13 +20,16 @@ describe("Event Handler", () => {
 
   beforeEach(() => {
     eventHandler = new EventHandler();
-    resetMocks();
     mockStoreInitialize.mockImplementation(() => {
       return Promise.resolve();
     });
     mockStoreDestroy.mockImplementation(() => {
       return Promise.resolve();
     });
+  });
+
+  afterEach(() => {
+    resetMocks();
   });
 
   describe("non events", () => {
@@ -92,7 +95,6 @@ describe("Event Handler", () => {
     const mockCommandExecute = jest.fn();
 
     beforeEach(() => {
-      resetOnMessageMocks();
       mockMessage = setUpMockMessage(false);
       mockGetCommandPrefix.mockImplementation(() => {
         return testPrefix;
@@ -105,6 +107,10 @@ describe("Event Handler", () => {
       mockCommandExecute.mockImplementation(() => {
         return Promise.resolve();
       });
+    });
+
+    afterEach(() => {
+      resetOnMessageMocks();
     });
 
     test("should execute command triggered by message", async () => {

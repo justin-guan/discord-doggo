@@ -30,11 +30,8 @@ const TEST_LOGIN_INFO: LoginInfo = {
 };
 
 describe("Discord Messenger", () => {
-  beforeEach(() => {
-    loginMock.mockReset();
-    onMock.mockReset();
-    clientDestroyMock.mockReset();
-    eventHandlerInitializeMock.mockReset();
+  afterEach(() => {
+    resetMocks();
   });
 
   test("should set up the client listeners and log in", async () => {
@@ -105,6 +102,14 @@ describe("Discord Messenger", () => {
 
     await expect(result).rejects.toBe(testError);
   });
+
+  function resetMocks(): void {
+    loginMock.mockReset();
+    onMock.mockReset();
+    clientDestroyMock.mockReset();
+    eventHandlerInitializeMock.mockReset();
+    clientDestroyMock.mockReset();
+  }
 
   function assertGoodClientSetup(): void {
     expect(loginMock).toBeCalledTimes(LOGIN_CALL_AMOUNT);

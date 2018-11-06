@@ -25,16 +25,16 @@ describe("Discord Event Handler", () => {
 
   beforeEach(() => {
     handler = new DiscordEventHandler();
-    mockOnReadyHandler.mockReset();
-    mockOnMessageHandler.mockReset();
-    mockEventHandlerInitialize.mockReset();
-    mockEventHandlerDestroy.mockReset();
     mockEventHandlerInitialize.mockImplementation(() => {
       return Promise.resolve();
     });
     mockEventHandlerDestroy.mockImplementation(() => {
       return Promise.resolve();
     });
+  });
+
+  afterEach(() => {
+    resetMocks();
   });
 
   describe("non events", () => {
@@ -140,4 +140,11 @@ describe("Discord Event Handler", () => {
       return mockDiscordMessage;
     }
   });
+
+  function resetMocks(): void {
+    mockOnReadyHandler.mockReset();
+    mockOnMessageHandler.mockReset();
+    mockEventHandlerInitialize.mockReset();
+    mockEventHandlerDestroy.mockReset();
+  }
 });
