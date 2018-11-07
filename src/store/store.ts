@@ -15,7 +15,7 @@ export default class Store {
   }
 
   public async updateCommandPrefix(update: CommandPrefixUpdate): Promise<void> {
-    const guild = await this.databaseStore.getGuild(update.guildId);
+    const guild = await this.databaseStore.getGuild(update.serverId);
     guild.setCommandPrefix(update.newPrefix);
     await guild.save();
   }
@@ -35,5 +35,5 @@ export default class Store {
 
 export interface CommandPrefixUpdate {
   readonly newPrefix: string;
-  readonly guildId: string;
+  readonly serverId: string;
 }
