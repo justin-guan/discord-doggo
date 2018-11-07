@@ -6,7 +6,7 @@ export default class CommandStore {
 
   constructor() {
     Commands.forEach(command => {
-      this.commands.set(command.getCommandName().toLowerCase(), command);
+      this.commands.set(command.getCommandName(), command);
     });
   }
 

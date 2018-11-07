@@ -4,7 +4,7 @@ import Command from "@store/commands/command";
 
 export default class Ping implements Command {
   public getCommandName(): string {
-    return "Ping";
+    return "ping";
   }
 
   public getCommandDescription(): string {
