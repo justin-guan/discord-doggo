@@ -48,6 +48,10 @@ describe("Store", () => {
     resetMocks();
   });
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   test("should initialize the data store", async () => {
     const result = store.initialize(testDatabaseUri);
 

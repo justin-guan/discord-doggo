@@ -35,6 +35,10 @@ describe("Database Store", () => {
     resetMocks();
   });
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   test("should connect to a mongodb instance", async () => {
     mockMongooseConnect.mockImplementation(() => {
       return Promise.resolve();

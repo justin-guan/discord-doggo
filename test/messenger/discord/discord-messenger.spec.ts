@@ -34,6 +34,10 @@ describe("Discord Messenger", () => {
     resetMocks();
   });
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   test("should set up the client listeners and log in", async () => {
     loginMock.mockImplementation(() => {
       return Promise.resolve();

@@ -32,6 +32,10 @@ describe("Event Handler", () => {
     resetMocks();
   });
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   describe("non events", () => {
     test("should initialize the data store", async () => {
       const result = eventHandler.initialize(TEST_STORE_URI);
