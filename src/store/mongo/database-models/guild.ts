@@ -20,7 +20,6 @@ const schema = new Schema({
   },
   commandPrefix: {
     type: String,
-    required: true,
     default: "!"
   }
 });

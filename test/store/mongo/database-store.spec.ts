@@ -21,7 +21,6 @@ jest.mock("@store/mongo/database-models/guild", () => {
 
 import Guild from "@store/models/guild";
 import DatabaseStore from "@store/mongo/database-store";
-import * as TypeMoq from "typemoq";
 
 describe("Database Store", () => {
   let databaseStore: DatabaseStore;
