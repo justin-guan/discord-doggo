@@ -15,7 +15,7 @@ export default class DatabaseStore implements Database {
   }
 
   public async close(): Promise<void> {
-    this.database.close();
+    await this.database.close();
   }
 
   public async getAllGuilds(): Promise<Guild[]> {
