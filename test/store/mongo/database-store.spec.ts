@@ -1,5 +1,3 @@
-// ignore max classes per file to allow for creating mock implementations
-// tslint:disable:max-classes-per-file
 const mockMongooseConnect = jest.fn();
 const mockMongooseConnectionClose = jest.fn();
 jest.mock("mongoose", () => {
