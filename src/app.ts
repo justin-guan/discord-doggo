@@ -9,7 +9,7 @@ import messenger from "@messenger/discord/discord-messenger";
       databaseUrl: mongoDbUrl
     });
   } catch (e) {
-    logger.error("Unable to login: Invalid discord token provided");
+    logger.error("Unable to start messenger");
   }
 })();
 
