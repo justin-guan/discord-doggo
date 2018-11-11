@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/convict": "^4.2.0",
     "@types/jest": "^23.3.7",
+    "@types/mongoose": "^5.2.22",
     "@types/node": "^10.12.0",
     "awesome-typescript-loader": "^5.2.1",
     "clean-webpack-plugin": "^0.1.19",
@@ -43,6 +44,7 @@
     "discord.js": "^11.4.2",
     "erlpack": "github:discordapp/erlpack",
     "libsodium-wrappers": "^0.7.3",
+    "mongoose": "^5.3.8",
     "node-opus": "^0.2.9",
     "opusscript": "0.0.6",
     "sodium": "^2.0.3",

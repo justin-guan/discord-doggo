@@ -1,12 +1,15 @@
-import { discordToken } from "@config";
+import { discordToken, mongoDbUrl } from "@config";
 import logger = require("@logger");
 import messenger from "@messenger/discord/discord-messenger";
 
 (async () => {
   try {
-    await messenger.start(discordToken);
+    await messenger.start({
+      messengerToken: discordToken,
+      databaseUrl: mongoDbUrl
+    });
   } catch (e) {
-    logger.error("Unable to login: Invalid discord token provided");
+    logger.error("Unable to start messenger");
   }
 })();
 

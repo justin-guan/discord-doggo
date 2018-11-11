@@ -1,6 +1,10 @@
 const mockOnReadyHandler = jest.fn();
 const mockOnMessageHandler = jest.fn();
+const mockEventHandlerInitialize = jest.fn();
+const mockEventHandlerDestroy = jest.fn();
 const mockEventHandler = jest.fn().mockImplementation(() => ({
+  initialize: mockEventHandlerInitialize,
+  destroy: mockEventHandlerDestroy,
   onReady: mockOnReadyHandler,
   onMessage: mockOnMessageHandler
 }));
@@ -21,8 +25,60 @@ describe("Discord Event Handler", () => {
 
   beforeEach(() => {
     handler = new DiscordEventHandler();
-    mockOnReadyHandler.mockReset();
-    mockOnMessageHandler.mockReset();
+    mockEventHandlerInitialize.mockImplementation(() => {
+      return Promise.resolve();
+    });
+    mockEventHandlerDestroy.mockImplementation(() => {
+      return Promise.resolve();
+    });
+  });
+
+  afterEach(() => {
+    resetMocks();
+  });
+
+  describe("non events", () => {
+    const testStoreUri = "test store uri";
+
+    test("should initialize the event handler", async () => {
+      const result = handler.initialize(testStoreUri);
+
+      await expect(result).resolves.toBeUndefined();
+      expect(mockEventHandlerInitialize).toBeCalledWith(testStoreUri);
+      expect(mockEventHandlerInitialize).toBeCalledTimes(1);
+    });
+
+    test("should fail to initialize the event handler", async () => {
+      const testError = new Error();
+      mockEventHandlerInitialize.mockImplementation(() => {
+        return Promise.reject(testError);
+      });
+
+      const result = handler.initialize(testStoreUri);
+
+      await expect(result).rejects.toBe(testError);
+      expect(mockEventHandlerInitialize).toBeCalledWith(testStoreUri);
+      expect(mockEventHandlerInitialize).toBeCalledTimes(1);
+    });
+
+    test("should destroy the event handler", async () => {
+      const result = handler.destroy();
+
+      await expect(result).resolves.toBeUndefined();
+      expect(mockEventHandlerDestroy).toBeCalledTimes(1);
+    });
+
+    test("should fail to destroy the event handler", async () => {
+      const testError = new Error();
+      mockEventHandlerDestroy.mockImplementation(() => {
+        return Promise.reject(testError);
+      });
+
+      const result = handler.destroy();
+
+      await expect(result).rejects.toBe(testError);
+      expect(mockEventHandlerDestroy).toBeCalledTimes(1);
+    });
   });
 
   describe("on Ready event", () => {
@@ -84,4 +140,11 @@ describe("Discord Event Handler", () => {
       return mockDiscordMessage;
     }
   });
+
+  function resetMocks(): void {
+    mockOnReadyHandler.mockReset();
+    mockOnMessageHandler.mockReset();
+    mockEventHandlerInitialize.mockReset();
+    mockEventHandlerDestroy.mockReset();
+  }
 });
