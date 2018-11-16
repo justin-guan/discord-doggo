@@ -1,3 +1,4 @@
+import { Commands } from "@store/commands/basic";
 import Command from "@store/commands/command";
 import CommandStore from "@store/commands/command-store";
 
@@ -6,7 +7,7 @@ describe("Command Store", () => {
   const testServerId = "test server id";
   const badCommandName = "NOT A COMMAND";
 
-  test.each(["ping"])(
+  test.each([...Commands].map(command => command.getCommandName()))(
     "should find the %s basic command",
     (commandName: string) => {
       const command = commandStore.getCommand(testServerId, commandName);

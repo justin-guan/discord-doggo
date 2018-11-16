@@ -1,7 +1,7 @@
 import { MessageSender } from "@messenger/base/message-sender";
-import Message from "@model/message";
 import { Commands } from "@store/commands/basic";
 import Command from "@store/commands/command";
+import CommandExecutionData from "@store/commands/command-execution-data";
 
 export default class Help implements Command {
   public getCommandName(): string {
@@ -13,7 +13,7 @@ export default class Help implements Command {
   }
 
   public async execute(
-    message: Message,
+    data: CommandExecutionData,
     messageSender: MessageSender
   ): Promise<void> {
     const basicCommandTitle = [`***__Basic Commands__***`];
@@ -22,9 +22,21 @@ export default class Help implements Command {
         return c1.getCommandName().localeCompare(c2.getCommandName());
       })
       .map(command => {
-        return `**${command.getCommandName()}** - ${command.getCommandDescription()}`;
+        return this.createHelpLine(
+          data.trigger,
+          command.getCommandName(),
+          command.getCommandDescription()
+        );
       });
     const toDisplay = basicCommandTitle.concat(basicCommandsToDisplay);
     await messageSender.sendSplitMessage(toDisplay);
+  }
+
+  private createHelpLine(
+    trigger: string,
+    name: string,
+    description: string
+  ): string {
+    return `**${trigger}${name}** - ${description}`;
   }
 }

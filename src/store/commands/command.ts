@@ -1,8 +1,11 @@
 import { MessageSender } from "@messenger/base/message-sender";
-import Message from "@model/message";
+import CommandExecutionData from "@store/commands/command-execution-data";
 
 export default interface Command {
   getCommandName(): string;
   getCommandDescription(): string;
-  execute(message: Message, messageSender: MessageSender): Promise<void>;
+  execute(
+    data: CommandExecutionData,
+    messageSender: MessageSender
+  ): Promise<void>;
 }
