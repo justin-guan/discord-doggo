@@ -35,7 +35,7 @@ export default class EventHandler {
       await command.execute(
         {
           trigger: prefix,
-          message
+          rawMessage: message
         },
         sender
       );

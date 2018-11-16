@@ -128,7 +128,7 @@ describe("Event Handler", () => {
       expect(mockCommandExecute).toBeCalledWith(
         expect.objectContaining({
           trigger: testPrefix,
-          message: mockMessage.object
+          rawMessage: mockMessage.object
         }),
         mockMessageSender.object
       );
@@ -179,7 +179,7 @@ describe("Event Handler", () => {
       expect(mockCommandExecute).toBeCalledWith(
         expect.objectContaining({
           trigger: testPrefix,
-          message: mockMessage.object
+          rawMessage: mockMessage.object
         }),
         mockMessageSender.object
       );

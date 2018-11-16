@@ -37,7 +37,7 @@ describe("Help Command", () => {
   };
   const testExecutionData: CommandExecutionData = {
     trigger: "!",
-    message: testMessage
+    rawMessage: testMessage
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();
 
