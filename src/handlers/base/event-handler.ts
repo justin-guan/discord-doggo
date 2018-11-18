@@ -32,7 +32,13 @@ export default class EventHandler {
     const commandName = message.message.replace(prefix, "");
     const command = await this.store.getCommand(message.serverId, commandName);
     if (command) {
-      await command.execute(message, sender);
+      await command.execute(
+        {
+          trigger: prefix,
+          rawMessage: message
+        },
+        sender
+      );
     }
   }
 }

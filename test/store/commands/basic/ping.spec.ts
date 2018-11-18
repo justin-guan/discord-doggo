@@ -1,6 +1,7 @@
 import { MessageSender } from "@messenger/base/message-sender";
 import Message from "@model/message";
 import Ping from "@store/commands/basic/ping";
+import CommandExecutionData from "@store/commands/command-execution-data";
 import * as TypeMoq from "typemoq";
 
 describe("Ping Command", () => {
@@ -14,6 +15,10 @@ describe("Ping Command", () => {
       isBot: false,
       name: ""
     }
+  };
+  const testExecutionData: CommandExecutionData = {
+    trigger: "!",
+    rawMessage: testMessage
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();
 
@@ -34,7 +39,7 @@ describe("Ping Command", () => {
       .setup(s => s.sendMessage(TypeMoq.It.isAnyString()))
       .returns(() => Promise.resolve());
 
-    const result = ping.execute(testMessage, mockMessageSender.object);
+    const result = ping.execute(testExecutionData, mockMessageSender.object);
 
     await expect(result).resolves.toBeUndefined();
     mockMessageSender.verify(
@@ -49,7 +54,7 @@ describe("Ping Command", () => {
       .setup(s => s.sendMessage(TypeMoq.It.isAnyString()))
       .returns(() => Promise.reject(testError));
 
-    const result = ping.execute(testMessage, mockMessageSender.object);
+    const result = ping.execute(testExecutionData, mockMessageSender.object);
 
     await expect(result).rejects.toBe(testError);
     mockMessageSender.verify(

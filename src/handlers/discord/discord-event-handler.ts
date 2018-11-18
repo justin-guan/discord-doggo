@@ -19,7 +19,7 @@ export default class DiscordEventHandler {
   };
 
   public onMessage = async (discordMessage: DiscordMessage): Promise<void> => {
-    const sender = new DiscordMessageSender(discordMessage.channel);
+    const sender = new DiscordMessageSender(discordMessage);
     const message: Message = {
       serverId: discordMessage.guild.id,
       message: discordMessage.content,

@@ -126,7 +126,10 @@ describe("Event Handler", () => {
       await expect(result).resolves.toBeUndefined();
       expect(mockCommandExecute).toBeCalledTimes(1);
       expect(mockCommandExecute).toBeCalledWith(
-        mockMessage.object,
+        expect.objectContaining({
+          trigger: testPrefix,
+          rawMessage: mockMessage.object
+        }),
         mockMessageSender.object
       );
     });
@@ -174,7 +177,10 @@ describe("Event Handler", () => {
       await expect(result).rejects.toBe(testError);
       expect(mockCommandExecute).toBeCalledTimes(1);
       expect(mockCommandExecute).toBeCalledWith(
-        mockMessage.object,
+        expect.objectContaining({
+          trigger: testPrefix,
+          rawMessage: mockMessage.object
+        }),
         mockMessageSender.object
       );
     });

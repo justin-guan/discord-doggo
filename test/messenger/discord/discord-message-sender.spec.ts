@@ -1,50 +1,43 @@
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
-import { Message, PartialTextBasedChannelFields } from "discord.js";
+import { createVerify } from "crypto";
+import { DMChannel, GroupDMChannel, Message, TextChannel } from "discord.js";
 import * as TypeMoq from "typemoq";
 
 describe("Discord Message Sender", () => {
   let discordMessageSender: DiscordMessageSender;
-  let mockChannel: TypeMoq.IMock<PartialTextBasedChannelFields>;
+  let mockMessage: TypeMoq.IMock<Message>;
+  let mockChannel: TypeMoq.IMock<TextChannel | DMChannel | GroupDMChannel>;
   const testMessage = "test";
 
   beforeEach(() => {
-    mockChannel = TypeMoq.Mock.ofType<PartialTextBasedChannelFields>();
-    discordMessageSender = new DiscordMessageSender(mockChannel.object);
+    mockMessage = TypeMoq.Mock.ofType<Message>();
+    mockChannel = TypeMoq.Mock.ofType<
+      TextChannel | DMChannel | GroupDMChannel
+    >();
+    mockMessage.setup(m => m.channel).returns(() => {
+      return mockChannel.object;
+    });
+    discordMessageSender = new DiscordMessageSender(mockMessage.object);
   });
 
-  describe("Promise resolved", () => {
-    const mockMessage = TypeMoq.Mock.ofType<Message>();
-    beforeEach(() => {
-      mockChannel
-        .setup(s => s.sendMessage(TypeMoq.It.isAnyString()))
-        .returns(() => Promise.resolve(mockMessage.object));
-    });
+  test("should try to send a message", async () => {
+    await discordMessageSender.sendMessage(testMessage);
 
-    test("should send a message to a discord text channel", async () => {
-      await discordMessageSender.sendMessage(testMessage);
-
-      mockChannel.verify(
-        channel => channel.send(testMessage),
-        TypeMoq.Times.once()
-      );
-    });
+    mockChannel.verify(c => c.send(testMessage), TypeMoq.Times.once());
   });
 
-  describe("Promise resolved", () => {
-    const mockMessage = TypeMoq.Mock.ofType<Message>();
-    beforeEach(() => {
-      mockChannel
-        .setup(s => s.sendMessage(TypeMoq.It.isAnyString()))
-        .returns(() => Promise.resolve(mockMessage.object));
-    });
+  test("should try to send a split message", async () => {
+    await discordMessageSender.sendSplitMessage([testMessage]);
 
-    test("should fail to send a message to a discord text channel", async () => {
-      await discordMessageSender.sendMessage(testMessage);
+    mockChannel.verify(
+      c => c.send([testMessage], { split: true }),
+      TypeMoq.Times.once()
+    );
+  });
 
-      mockChannel.verify(
-        channel => channel.send(testMessage),
-        TypeMoq.Times.once()
-      );
-    });
+  test("should try to reply to a message", async () => {
+    await discordMessageSender.replyMessage(testMessage);
+
+    mockMessage.verify(m => m.reply(testMessage), TypeMoq.Times.once());
   });
 });

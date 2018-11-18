@@ -1,6 +1,6 @@
 import { MessageSender } from "@messenger/base/message-sender";
-import Message from "@model/message";
 import Command from "@store/commands/command";
+import CommandExecutionData from "@store/commands/command-execution-data";
 
 export default class Ping implements Command {
   public getCommandName(): string {
@@ -12,7 +12,7 @@ export default class Ping implements Command {
   }
 
   public async execute(
-    message: Message,
+    message: CommandExecutionData,
     messageSender: MessageSender
   ): Promise<void> {
     await messageSender.sendMessage("pong!");
