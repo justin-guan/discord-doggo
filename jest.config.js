@@ -12,5 +12,8 @@ module.exports = {
     "src/config/config.ts",
     "src/logger/logger.ts"
   ],
-  resolver: "jest-webpack-resolver"
+  resolver: "jest-webpack-resolver",
+  jestWebpackResolver: {
+    webpackConfig: "test/webpack.config.js"
+  }
 };
