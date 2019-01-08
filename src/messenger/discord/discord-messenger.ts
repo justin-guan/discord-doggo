@@ -4,11 +4,14 @@ import { Client } from "discord.js";
 
 class DiscordMessenger implements Messenger {
   private client: Client = new Client();
-  private eventHandler: DiscordEventHandler = new DiscordEventHandler();
+  private eventHandler: DiscordEventHandler = new DiscordEventHandler(
+    this.client
+  );
 
   public async start(loginInfo: LoginInfo): Promise<void> {
     this.client.on("ready", this.eventHandler.onReady);
     this.client.on("message", this.eventHandler.onMessage);
+    this.client.on("voiceStateUpdate", this.eventHandler.onVoiceStateUpdate);
     const clientPromise = this.client.login(loginInfo.messengerToken);
     const handlerPromise = this.eventHandler.initialize(loginInfo.databaseUrl);
     await Promise.all([clientPromise, handlerPromise]);
