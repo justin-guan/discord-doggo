@@ -62,9 +62,9 @@ export default class EventHandler {
       return;
     }
     if (newVoiceId && this.client.isInVoiceChannel(newVoiceId)) {
-      await this.sayLeave(newVoiceId, newMember.getDisplayName());
+      await this.sayJoin(newVoiceId, newMember.getDisplayName());
     } else if (oldVoiceId && this.client.isInVoiceChannel(oldVoiceId)) {
-      await this.sayJoin(oldVoiceId, newMember.getDisplayName());
+      await this.sayLeave(oldVoiceId, newMember.getDisplayName());
     }
   }
 
@@ -88,7 +88,7 @@ export default class EventHandler {
     text: string
   ): Promise<void> {
     try {
-      const p = path.resolve(__dirname, `${username}.mp3`);
+      const p = path.resolve(__dirname, `${username} ${text}.mp3`);
       await this.voiceSynthesizer.synthesize(`${username} ${text}`, p);
       await this.client.playFile(voiceChannelId, p);
     } catch (error) {
