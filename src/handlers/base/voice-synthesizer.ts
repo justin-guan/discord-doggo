@@ -1,14 +1,14 @@
 import { voiceUrl } from "@config";
-import fs from "fs";
+import fs, { promises } from "fs";
 import request from "request";
 
 export default class VoiceSynthesizer {
   public async synthesize(text: string, path: string): Promise<void> {
     fs.exists(path, async exists => {
       if (exists) {
-        await this.synthesizeRequest(text, path);
+        return Promise.resolve();
       } else {
-        return Promise.reject("Path does not exist");
+        await this.synthesizeRequest(text, path);
       }
     });
   }

@@ -30,6 +30,9 @@ module.exports = function(tsconfigPath) {
       filename: "app.js",
       path: path.resolve(__dirname, "dist")
     },
-    externals: [nodeExternals()]
+    externals: [nodeExternals()],
+    node: {
+      __dirname: false
+    }
   };
 };

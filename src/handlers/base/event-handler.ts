@@ -52,16 +52,19 @@ export default class EventHandler {
     }
   }
 
-  public onVoiceStateUpdate(oldMember: Member, newMember: Member): void {
+  public async onVoiceStateUpdate(
+    oldMember: Member,
+    newMember: Member
+  ): Promise<void> {
     const oldVoiceId = oldMember.voiceChannelId;
     const newVoiceId = newMember.voiceChannelId;
     if (newMember.id === this.client.id || oldVoiceId === newVoiceId) {
       return;
     }
     if (newVoiceId && this.client.isInVoiceChannel(newVoiceId)) {
-      this.sayJoin(newVoiceId, newMember.getDisplayName());
+      await this.sayLeave(newVoiceId, newMember.getDisplayName());
     } else if (oldVoiceId && this.client.isInVoiceChannel(oldVoiceId)) {
-      this.sayLeave(oldVoiceId, newMember.getDisplayName());
+      await this.sayJoin(oldVoiceId, newMember.getDisplayName());
     }
   }
 
