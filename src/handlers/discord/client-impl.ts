@@ -13,11 +13,13 @@ export default class ClientImpl implements Client {
   }
 
   public isInVoiceChannel(channelId: string): boolean {
-    return this.client.voiceConnections.exists("channel", channelId);
+    return this.client.voiceConnections.some(vc => vc.channel.id === channelId);
   }
 
   public async playFile(voiceChannelId: string, file: string): Promise<void> {
-    const connection = this.client.voiceConnections.get(voiceChannelId);
+    const connection = this.client.voiceConnections.find(
+      vc => vc.channel.id === voiceChannelId
+    );
     if (connection) {
       await connection.playFile(file);
     } else {

@@ -1,5 +1,6 @@
 import EventHandler from "@handlers/base/event-handler";
 import ClientImpl from "@handlers/discord/client-impl";
+import DiscordMessageImpl from "@handlers/discord/discord-message-impl";
 import MemberImpl from "@handlers/discord/member-impl";
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
 import Message from "@model/message";
@@ -30,14 +31,7 @@ export default class DiscordEventHandler {
 
   public onMessage = async (discordMessage: DiscordMessage): Promise<void> => {
     const sender = new DiscordMessageSender(discordMessage);
-    const message: Message = {
-      serverId: discordMessage.guild.id,
-      message: discordMessage.content,
-      author: {
-        name: discordMessage.author.username,
-        isBot: discordMessage.author.bot
-      }
-    };
+    const message: Message = new DiscordMessageImpl(discordMessage);
     await this.eventHandler.onMessage(sender, message);
   };
 
