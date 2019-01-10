@@ -1,7 +1,7 @@
 import EventHandler from "@handlers/base/event-handler";
-import ClientImpl from "@handlers/discord/client-impl";
+import DiscordClientImpl from "@handlers/discord/discord-client-impl";
+import DiscordMemberImpl from "@handlers/discord/discord-member-impl";
 import DiscordMessageImpl from "@handlers/discord/discord-message-impl";
-import MemberImpl from "@handlers/discord/member-impl";
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
 import Message from "@model/message";
 import {
@@ -14,7 +14,7 @@ export default class DiscordEventHandler {
   private eventHandler: EventHandler;
 
   constructor(client: DiscordClient) {
-    this.eventHandler = new EventHandler(new ClientImpl(client));
+    this.eventHandler = new EventHandler(new DiscordClientImpl(client));
   }
 
   public async initialize(storeUri: string): Promise<void> {
@@ -31,7 +31,7 @@ export default class DiscordEventHandler {
 
   public onMessage = async (discordMessage: DiscordMessage): Promise<void> => {
     const sender = new DiscordMessageSender(discordMessage);
-    const message: Message = new DiscordMessageImpl(discordMessage);
+    const message = new DiscordMessageImpl(discordMessage);
     await this.eventHandler.onMessage(sender, message);
   };
 
@@ -39,8 +39,8 @@ export default class DiscordEventHandler {
     oldGuildMember: GuildMember,
     newGuildMember: GuildMember
   ): Promise<void> => {
-    const oldMember = new MemberImpl(oldGuildMember);
-    const newMember = new MemberImpl(newGuildMember);
+    const oldMember = new DiscordMemberImpl(oldGuildMember);
+    const newMember = new DiscordMemberImpl(newGuildMember);
     await this.eventHandler.onVoiceStateUpdate(oldMember, newMember);
   };
 }

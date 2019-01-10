@@ -1,7 +1,7 @@
 import Client from "@handlers/base/client";
 import { Client as DiscordClient } from "discord.js";
 
-export default class ClientImpl implements Client {
+export default class DiscordClientImpl implements Client {
   private readonly client: DiscordClient;
 
   constructor(client: DiscordClient) {
