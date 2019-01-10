@@ -1,4 +1,4 @@
-import Client from "@handlers/base/client";
+import Client from "@model/base/client";
 import { Client as DiscordClient } from "discord.js";
 
 export default class DiscordClientImpl implements Client {

@@ -1,9 +1,9 @@
-import Client from "@handlers/base/client";
 import VoiceSynthesizer from "@handlers/base/voice-synthesizer";
 import logger from "@logger";
 import { MessageSender } from "@messenger/base/message-sender";
-import Member from "@model/member";
-import Message from "@model/message";
+import Client from "@model/base/client";
+import Member from "@model/base/member";
+import Message from "@model/base/message";
 import Store from "@store/store";
 import path from "path";
 

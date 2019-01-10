@@ -1,4 +1,4 @@
-import Author from "@model/author";
+import Author from "@model/base/author";
 
 export default interface Message {
   readonly serverId: string;

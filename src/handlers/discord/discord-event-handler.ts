@@ -1,9 +1,8 @@
 import EventHandler from "@handlers/base/event-handler";
-import DiscordClientImpl from "@handlers/discord/discord-client-impl";
-import DiscordMemberImpl from "@handlers/discord/discord-member-impl";
-import DiscordMessageImpl from "@handlers/discord/discord-message-impl";
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
-import Message from "@model/message";
+import DiscordClientImpl from "@model/discord/discord-client-impl";
+import DiscordMemberImpl from "@model/discord/discord-member-impl";
+import DiscordMessageImpl from "@model/discord/discord-message-impl";
 import {
   Client as DiscordClient,
   GuildMember,

@@ -1,6 +1,6 @@
-import DiscordAuthorImpl from "@handlers/discord/discord-author-impl";
-import Author from "@model/author";
-import Message from "@model/message";
+import Author from "@model/base/author";
+import Message from "@model/base/message";
+import DiscordAuthorImpl from "@model/discord/discord-author-impl";
 import { Message as DiscordMessage } from "discord.js";
 
 export default class DiscordMessageImpl implements Message {

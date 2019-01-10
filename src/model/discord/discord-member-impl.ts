@@ -1,4 +1,4 @@
-import Member from "@model/member";
+import Member from "@model/base/member";
 import { GuildMember } from "discord.js";
 
 export default class DiscordMemberImpl implements Member {

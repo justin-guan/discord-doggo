@@ -1,4 +1,4 @@
-import Author from "@model/author";
+import Author from "@model/base/author";
 import { Message } from "discord.js";
 
 export default class DiscordAuthorImpl implements Author {
