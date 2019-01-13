@@ -1,5 +1,4 @@
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
-import { createVerify } from "crypto";
 import { DMChannel, GroupDMChannel, Message, TextChannel } from "discord.js";
 import * as TypeMoq from "typemoq";
 

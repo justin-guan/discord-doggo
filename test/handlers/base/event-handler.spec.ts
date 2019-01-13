@@ -1,11 +1,24 @@
 const mockInfoLog = jest.fn();
+const mockErrorLog = jest.fn();
 jest.mock("@logger", () => {
-  return { info: mockInfoLog };
+  return {
+    info: mockInfoLog,
+    error: mockErrorLog
+  };
+});
+
+jest.mock("@config", () => {
+  return {
+    discordToken: "discord token",
+    voiceUrl: "voice url",
+    mongoDbUrl: "mongo db url"
+  };
 });
 
 import EventHandler from "@handlers/base/event-handler";
 import { MessageSender } from "@messenger/base/message-sender";
-import Message from "@model/message";
+import Client from "@model/base/client";
+import Message from "@model/base/message";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
 
@@ -17,9 +30,10 @@ describe("Event Handler", () => {
   Store.prototype.initialize = mockStoreInitialize;
   const mockStoreDestroy = jest.fn();
   Store.prototype.destroy = mockStoreDestroy;
+  const mockClient = TypeMoq.Mock.ofType<Client>();
 
   beforeEach(() => {
-    eventHandler = new EventHandler();
+    eventHandler = new EventHandler(mockClient.object);
     mockStoreInitialize.mockImplementation(() => {
       return Promise.resolve();
     });
@@ -204,7 +218,9 @@ describe("Event Handler", () => {
       mock.setup(m => m.author).returns(() => {
         return {
           isBot,
-          name: ""
+          name: "",
+          joinCurrentVoiceChannel: () => Promise.resolve(),
+          leaveCurrentVoiceChannel: () => Promise.resolve()
         };
       });
       mock.setup(m => m.message).returns(() => {
@@ -224,5 +240,6 @@ describe("Event Handler", () => {
     mockInfoLog.mockReset();
     mockStoreInitialize.mockReset();
     mockStoreDestroy.mockReset();
+    mockClient.reset();
   }
 });

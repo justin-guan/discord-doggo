@@ -14,8 +14,9 @@ jest.mock("@handlers/base/event-handler", () => {
 
 import DiscordEventHandler from "@handlers/discord/discord-event-handler";
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
-import Message from "@model/message";
-import { Message as DiscordMessage, User } from "discord.js";
+import Message from "@model/base/message";
+import DiscordMessageImpl from "@model/discord/discord-message-impl";
+import { Client, Message as DiscordMessage, User } from "discord.js";
 import * as TypeMoq from "typemoq";
 
 describe("Discord Event Handler", () => {
@@ -24,7 +25,7 @@ describe("Discord Event Handler", () => {
   const testAuthorName = "Test Author";
 
   beforeEach(() => {
-    handler = new DiscordEventHandler();
+    handler = new DiscordEventHandler(createMockClient().object);
     mockEventHandlerInitialize.mockImplementation(() => {
       return Promise.resolve();
     });
@@ -113,13 +114,10 @@ describe("Discord Event Handler", () => {
 
     function assertOnMessageHandler(mock: jest.Mock<{}>): void {
       expect(mock).toBeCalledTimes(1);
-      expect(mock).toBeCalledWith(expect.any(DiscordMessageSender), {
-        message: testMessageContent,
-        author: {
-          name: testAuthorName,
-          isBot: false
-        }
-      });
+      expect(mock).toBeCalledWith(
+        expect.any(DiscordMessageSender),
+        expect.any(DiscordMessageImpl)
+      );
     }
 
     function createMockUser(): TypeMoq.IMock<User> {
@@ -140,6 +138,11 @@ describe("Discord Event Handler", () => {
       return mockDiscordMessage;
     }
   });
+
+  function createMockClient(): TypeMoq.IMock<Client> {
+    const mockClient = TypeMoq.Mock.ofType<Client>();
+    return mockClient;
+  }
 
   function resetMocks(): void {
     mockOnReadyHandler.mockReset();
