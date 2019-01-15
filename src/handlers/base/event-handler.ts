@@ -61,9 +61,9 @@ export default class EventHandler {
     if (newMember.id === this.client.id || oldVoiceId === newVoiceId) {
       return;
     }
-    if (newVoiceId && this.client.isInVoiceChannel(newVoiceId)) {
+    if (this.client.isInVoiceChannel(newVoiceId)) {
       await this.sayJoin(newVoiceId, newMember.getDisplayName());
-    } else if (oldVoiceId && this.client.isInVoiceChannel(oldVoiceId)) {
+    } else if (this.client.isInVoiceChannel(oldVoiceId)) {
       await this.sayLeave(oldVoiceId, newMember.getDisplayName());
     }
   }
@@ -88,9 +88,12 @@ export default class EventHandler {
     text: string
   ): Promise<void> {
     try {
-      const p = path.resolve(__dirname, `${username} ${text}.mp3`);
-      await this.voiceSynthesizer.synthesize(`${username} ${text}`, p);
-      await this.client.playFile(voiceChannelId, p);
+      const absPath = path.resolve(__dirname, `${username} ${text}.mp3`);
+      const synthPath = await this.voiceSynthesizer.synthesize(
+        `${username} ${text}`,
+        absPath
+      );
+      await this.client.playFile(voiceChannelId, synthPath);
     } catch (error) {
       logger.error("Failed to synthesize voice");
     }

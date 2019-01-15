@@ -1,17 +1,17 @@
 import { voiceUrl } from "@config";
-import fs, { promises } from "fs";
+import fs from "fs";
 import request from "request";
 
 export default class VoiceSynthesizer {
-  public synthesize(text: string, path: string): Promise<void> {
+  public synthesize(text: string, path: string): Promise<string> {
     return new Promise((resolve, reject) => {
       fs.exists(path, exists => {
         if (exists) {
-          resolve();
+          resolve(path);
         } else {
           const writable = fs.createWriteStream(path);
           writable.on("error", err => reject(err));
-          writable.on("finish", () => resolve());
+          writable.on("finish", () => resolve(path));
           request.get(voiceUrl + text).pipe(writable);
         }
       });
