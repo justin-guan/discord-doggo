@@ -14,7 +14,6 @@ export default class VoiceSynthesizer {
         } else {
           const writable = fs.createWriteStream(path);
           let streamEndByError = false;
-          /* istanbul ignore next (Cannot mock write stream failure with mock-fs) */
           writable.on("error", err => reject(err));
           writable.on("finish", () => {
             if (!streamEndByError) {
@@ -30,7 +29,6 @@ export default class VoiceSynthesizer {
                 try {
                   await this.deleteFile(path);
                 } catch (e) {
-                  /* istanbul ignore next (Cannot mock fs.unlink behavior to fail with mock-fs) */
                   logger.error(`Failed to delete file at ${path}\n${e}`);
                 } finally {
                   reject(new Error("Failed to download voice file"));
@@ -48,9 +46,7 @@ export default class VoiceSynthesizer {
   private deleteFile(path: string): Promise<void> {
     return new Promise((resolve, reject) => {
       fs.unlink(path, err => {
-        /* istanbul ignore next (Cannot mock fs.unlink behavior to fail with mock-fs) */
         if (err) {
-          /* istanbul ignore next (Cannot mock fs.unlink behavior to fail with mock-fs) */
           reject(err);
         } else {
           resolve();
