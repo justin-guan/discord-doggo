@@ -1,5 +1,5 @@
 import Client from "@model/base/client";
-import { Client as DiscordClient } from "discord.js";
+import { Client as DiscordClient, VoiceChannel } from "discord.js";
 
 export default class DiscordClientImpl implements Client {
   private readonly client: DiscordClient;
@@ -14,6 +14,21 @@ export default class DiscordClientImpl implements Client {
 
   public isInVoiceChannel(channelId: string): boolean {
     return this.client.voiceConnections.some(vc => vc.channel.id === channelId);
+  }
+
+  public getConnectedVoiceChannelIds(): string[] {
+    return this.client.voiceConnections.map(vc => vc.channel.id);
+  }
+
+  public async joinVoiceChannel(voiceChannelId: string): Promise<void> {
+    const channel = this.client.channels.get(voiceChannelId);
+    if (channel && channel instanceof VoiceChannel) {
+      await (channel as VoiceChannel).join();
+    } else {
+      return Promise.reject(
+        new Error(`${voiceChannelId} is not a joinable voice channel`)
+      );
+    }
   }
 
   public async playFile(voiceChannelId: string, file: string): Promise<void> {

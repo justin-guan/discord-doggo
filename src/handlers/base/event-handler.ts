@@ -21,10 +21,12 @@ export default class EventHandler {
   }
 
   public async destroy(): Promise<void> {
+    await this.saveConnections();
     await this.store.destroy();
   }
 
-  public onReady(): void {
+  public async onReady(): Promise<void> {
+    await this.rejoinPreviousConnections();
     logger.info("Client ready!");
   }
 
@@ -97,5 +99,17 @@ export default class EventHandler {
     } catch (error) {
       logger.error("Failed to synthesize voice");
     }
+  }
+
+  private async saveConnections(): Promise<void> {
+    await this.store.saveConnections(this.client.getConnectedVoiceChannelIds());
+  }
+
+  private async rejoinPreviousConnections(): Promise<void> {
+    const oldConnections = await this.store.getPreviousConnections();
+    const joinPromises = oldConnections.map(voiceChannelId =>
+      this.client.joinVoiceChannel(voiceChannelId)
+    );
+    await Promise.all(joinPromises);
   }
 }
