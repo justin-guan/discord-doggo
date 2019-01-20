@@ -4,6 +4,14 @@ jest.mock("discord.js", () => {
   };
 });
 
+jest.mock("@config", () => {
+  return {
+    discordToken: "discord token",
+    voiceUrl: "voice url",
+    mongoDbUrl: "mongo db url"
+  };
+});
+
 import DiscordEventHandler from "@handlers/discord/discord-event-handler";
 import { LoginInfo } from "@messenger/base/messenger";
 import DiscordMessenger from "@messenger/discord/discord-messenger";
@@ -21,7 +29,7 @@ const eventHandlerDestroyMock = jest.fn();
 DiscordEventHandler.prototype.destroy = eventHandlerDestroyMock;
 
 const LOGIN_CALL_AMOUNT = 1;
-const LISTENER_SETUP_AMOUNT = 2;
+const LISTENER_SETUP_AMOUNT = 3;
 const READY_EVENT = "ready";
 const MESSAGE_EVENT = "message";
 const TEST_LOGIN_INFO: LoginInfo = {

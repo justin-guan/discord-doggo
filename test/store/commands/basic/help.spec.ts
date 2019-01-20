@@ -1,5 +1,5 @@
 import { MessageSender } from "@messenger/base/message-sender";
-import Message from "@model/message";
+import Message from "@model/base/message";
 import Help from "@store/commands/basic/help";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
@@ -32,7 +32,9 @@ describe("Help Command", () => {
     message: "",
     author: {
       isBot: false,
-      name: ""
+      name: "",
+      joinCurrentVoiceChannel: jest.fn(),
+      leaveCurrentVoiceChannel: jest.fn()
     }
   };
   const testExecutionData: CommandExecutionData = {

@@ -5,7 +5,7 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.File({
       level: "info",
-      filename: path.join(__dirname, "/../../logs.log"),
+      filename: path.join(__dirname, "logs.log"),
       handleExceptions: true,
       maxsize: 5242880, // 5MB
       maxFiles: 5,

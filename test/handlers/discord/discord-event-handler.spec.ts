@@ -1,12 +1,14 @@
 const mockOnReadyHandler = jest.fn();
 const mockOnMessageHandler = jest.fn();
+const mockOnVoiceStateUpdateHandler = jest.fn();
 const mockEventHandlerInitialize = jest.fn();
 const mockEventHandlerDestroy = jest.fn();
 const mockEventHandler = jest.fn().mockImplementation(() => ({
   initialize: mockEventHandlerInitialize,
   destroy: mockEventHandlerDestroy,
   onReady: mockOnReadyHandler,
-  onMessage: mockOnMessageHandler
+  onMessage: mockOnMessageHandler,
+  onVoiceStateUpdate: mockOnVoiceStateUpdateHandler
 }));
 jest.mock("@handlers/base/event-handler", () => {
   return mockEventHandler;
@@ -14,8 +16,13 @@ jest.mock("@handlers/base/event-handler", () => {
 
 import DiscordEventHandler from "@handlers/discord/discord-event-handler";
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
-import Message from "@model/message";
-import { Message as DiscordMessage, User } from "discord.js";
+import DiscordMessageImpl from "@model/discord/discord-message-impl";
+import {
+  Client,
+  GuildMember,
+  Message as DiscordMessage,
+  User
+} from "discord.js";
 import * as TypeMoq from "typemoq";
 
 describe("Discord Event Handler", () => {
@@ -24,7 +31,7 @@ describe("Discord Event Handler", () => {
   const testAuthorName = "Test Author";
 
   beforeEach(() => {
-    handler = new DiscordEventHandler();
+    handler = new DiscordEventHandler(createMockClient().object);
     mockEventHandlerInitialize.mockImplementation(() => {
       return Promise.resolve();
     });
@@ -113,13 +120,10 @@ describe("Discord Event Handler", () => {
 
     function assertOnMessageHandler(mock: jest.Mock<{}>): void {
       expect(mock).toBeCalledTimes(1);
-      expect(mock).toBeCalledWith(expect.any(DiscordMessageSender), {
-        message: testMessageContent,
-        author: {
-          name: testAuthorName,
-          isBot: false
-        }
-      });
+      expect(mock).toBeCalledWith(
+        expect.any(DiscordMessageSender),
+        expect.any(DiscordMessageImpl)
+      );
     }
 
     function createMockUser(): TypeMoq.IMock<User> {
@@ -140,6 +144,58 @@ describe("Discord Event Handler", () => {
       return mockDiscordMessage;
     }
   });
+
+  describe("on Voice State Update", () => {
+    test("should forward the member update to event handler", async () => {
+      const id = "id";
+      const oldVoiceId = "old voice id";
+      const newVoiceId = "new voice id";
+      const oldMember = createMockMember(id, oldVoiceId);
+      const newMember = createMockMember(id, newVoiceId);
+      mockOnVoiceStateUpdateHandler.mockImplementation(() => Promise.resolve());
+
+      const result = handler.onVoiceStateUpdate(
+        oldMember.object,
+        newMember.object
+      );
+
+      await expect(result).resolves.toBeUndefined();
+    });
+
+    test("should forward the member update to event handler and fail", async () => {
+      const id = "id";
+      const oldVoiceId = "old voice id";
+      const newVoiceId = "new voice id";
+      const oldMember = createMockMember(id, oldVoiceId);
+      const newMember = createMockMember(id, newVoiceId);
+      const testError = new Error();
+      mockOnVoiceStateUpdateHandler.mockImplementation(() =>
+        Promise.reject(testError)
+      );
+
+      const result = handler.onVoiceStateUpdate(
+        oldMember.object,
+        newMember.object
+      );
+
+      await expect(result).rejects.toBe(testError);
+    });
+
+    function createMockMember(
+      id: string,
+      voiceId: string
+    ): TypeMoq.IMock<GuildMember> {
+      const mockMember = TypeMoq.Mock.ofType<GuildMember>();
+      mockMember.setup(m => m.id).returns(() => id);
+      mockMember.setup(m => m.voiceChannelID).returns(() => voiceId);
+      return mockMember;
+    }
+  });
+
+  function createMockClient(): TypeMoq.IMock<Client> {
+    const mockClient = TypeMoq.Mock.ofType<Client>();
+    return mockClient;
+  }
 
   function resetMocks(): void {
     mockOnReadyHandler.mockReset();

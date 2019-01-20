@@ -1,15 +1,37 @@
 const mockInfoLog = jest.fn();
+const mockErrorLog = jest.fn();
 jest.mock("@logger", () => {
-  return { info: mockInfoLog };
+  return {
+    info: mockInfoLog,
+    error: mockErrorLog
+  };
+});
+
+jest.mock("@config", () => {
+  return {
+    discordToken: "discord token",
+    voiceUrl: "voice url",
+    mongoDbUrl: "mongo db url"
+  };
+});
+
+const mockSynthesize = jest.fn();
+jest.mock("@handlers/base/voice-synthesizer", () => {
+  return class {
+    public synthesize = mockSynthesize;
+  };
 });
 
 import EventHandler from "@handlers/base/event-handler";
 import { MessageSender } from "@messenger/base/message-sender";
-import Message from "@model/message";
+import Client from "@model/base/client";
+import Member from "@model/base/member";
+import Message from "@model/base/message";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
 
 const TEST_STORE_URI = "test store uri";
+const TEST_CLIENT_ID = "test client id";
 
 describe("Event Handler", () => {
   let eventHandler: EventHandler;
@@ -17,15 +39,17 @@ describe("Event Handler", () => {
   Store.prototype.initialize = mockStoreInitialize;
   const mockStoreDestroy = jest.fn();
   Store.prototype.destroy = mockStoreDestroy;
+  const mockClient = TypeMoq.Mock.ofType<Client>();
 
   beforeEach(() => {
-    eventHandler = new EventHandler();
+    eventHandler = new EventHandler(mockClient.object);
     mockStoreInitialize.mockImplementation(() => {
       return Promise.resolve();
     });
     mockStoreDestroy.mockImplementation(() => {
       return Promise.resolve();
     });
+    mockClient.setup(c => c.id).returns(() => TEST_CLIENT_ID);
   });
 
   afterEach(() => {
@@ -204,7 +228,9 @@ describe("Event Handler", () => {
       mock.setup(m => m.author).returns(() => {
         return {
           isBot,
-          name: ""
+          name: "",
+          joinCurrentVoiceChannel: () => Promise.resolve(),
+          leaveCurrentVoiceChannel: () => Promise.resolve()
         };
       });
       mock.setup(m => m.message).returns(() => {
@@ -220,9 +246,118 @@ describe("Event Handler", () => {
     }
   });
 
+  describe("on Voice State Update", () => {
+    const memberId = "member id";
+    const voiceId1 = "voice id 1";
+    const voiceId2 = "voice id 2";
+    const synthPath = "synth path";
+
+    test("should do nothing for self update", async () => {
+      const testVoiceId1 = "test voice id 1";
+      const testVoiceId2 = "test voice id 2";
+      const oldMember = createMockMember(TEST_CLIENT_ID, testVoiceId1);
+      const newMember = createMockMember(TEST_CLIENT_ID, testVoiceId2);
+
+      const result = eventHandler.onVoiceStateUpdate(oldMember, newMember);
+
+      await expect(result).resolves.toBeUndefined();
+      mockClient.verify(
+        c => c.playFile(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+        TypeMoq.Times.never()
+      );
+    });
+
+    test("should do nothing for non channel change", async () => {
+      const testId = "test id";
+      const testVoiceId = "test voice id";
+      const member = createMockMember(testId, testVoiceId);
+
+      const result = eventHandler.onVoiceStateUpdate(member, member);
+
+      await expect(result).resolves.toBeUndefined();
+      mockClient.verify(
+        c => c.playFile(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+        TypeMoq.Times.never()
+      );
+    });
+
+    test("should announce join", async () => {
+      const oldMember = createMockMember(memberId, voiceId1);
+      const newMember = createMockMember(memberId, voiceId2);
+      mockSynthesize.mockImplementation(() => Promise.resolve(synthPath));
+      mockClient.setup(c => c.isInVoiceChannel(voiceId2)).returns(() => true);
+
+      const result = eventHandler.onVoiceStateUpdate(oldMember, newMember);
+
+      await expect(result).resolves.toBeUndefined();
+      mockClient.verify(
+        c => c.playFile(voiceId2, synthPath),
+        TypeMoq.Times.once()
+      );
+    });
+
+    test("should announce leave", async () => {
+      const oldMember = createMockMember(memberId, voiceId1);
+      const newMember = createMockMember(memberId, voiceId2);
+      mockSynthesize.mockImplementation(() => Promise.resolve(synthPath));
+      mockClient.setup(c => c.isInVoiceChannel(voiceId1)).returns(() => true);
+
+      const result = eventHandler.onVoiceStateUpdate(oldMember, newMember);
+
+      await expect(result).resolves.toBeUndefined();
+      mockClient.verify(
+        c => c.playFile(voiceId1, synthPath),
+        TypeMoq.Times.once()
+      );
+    });
+
+    test("should not announce because bot not in channel changes", async () => {
+      const oldMember = createMockMember(memberId, voiceId1);
+      const newMember = createMockMember(memberId, voiceId2);
+      mockSynthesize.mockImplementation(() => Promise.resolve(synthPath));
+      mockClient.setup(c => c.isInVoiceChannel(voiceId1)).returns(() => false);
+      mockClient.setup(c => c.isInVoiceChannel(voiceId2)).returns(() => false);
+
+      const result = eventHandler.onVoiceStateUpdate(oldMember, newMember);
+
+      await expect(result).resolves.toBeUndefined();
+      mockClient.verify(
+        c => c.playFile(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+        TypeMoq.Times.never()
+      );
+    });
+
+    test("should fail to announce", async () => {
+      const oldMember = createMockMember(memberId, voiceId1);
+      const newMember = createMockMember(memberId, voiceId2);
+      mockSynthesize.mockImplementation(() => Promise.reject(new Error()));
+      mockClient.setup(c => c.isInVoiceChannel(voiceId1)).returns(() => true);
+
+      const result = eventHandler.onVoiceStateUpdate(oldMember, newMember);
+
+      await expect(result).resolves.toBeUndefined();
+      mockClient.verify(
+        c => c.playFile(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+        TypeMoq.Times.never()
+      );
+      await expect(mockErrorLog).toBeCalledTimes(1);
+    });
+
+    function createMockMember(id: string, voiceId: string): Member {
+      return {
+        id,
+        voiceChannelId: voiceId,
+        getDisplayName: () => id
+      };
+    }
+  });
+
   function resetMocks(): void {
     mockInfoLog.mockReset();
+    mockErrorLog.mockReset();
     mockStoreInitialize.mockReset();
     mockStoreDestroy.mockReset();
+    mockSynthesize.mockReset();
+    mockClient.reset();
   }
 });
