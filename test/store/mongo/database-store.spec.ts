@@ -18,6 +18,12 @@ jest.mock("@store/mongo/database-models/guild", () => {
     }
   };
 });
+jest.mock(
+  "@store/mongo/database-models/client-voice-connections-config",
+  () => {
+    return {};
+  }
+);
 
 import Guild from "@store/models/guild";
 import DatabaseStore from "@store/mongo/database-store";

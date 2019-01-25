@@ -39,6 +39,10 @@ describe("Event Handler", () => {
   Store.prototype.initialize = mockStoreInitialize;
   const mockStoreDestroy = jest.fn();
   Store.prototype.destroy = mockStoreDestroy;
+  const mockStoreGetPreviousConnections = jest.fn();
+  Store.prototype.getPreviousConnections = mockStoreGetPreviousConnections;
+  const mockSaveConnections = jest.fn();
+  Store.prototype.saveConnections = mockSaveConnections;
   const mockClient = TypeMoq.Mock.ofType<Client>();
 
   beforeEach(() => {
@@ -47,6 +51,12 @@ describe("Event Handler", () => {
       return Promise.resolve();
     });
     mockStoreDestroy.mockImplementation(() => {
+      return Promise.resolve();
+    });
+    mockStoreGetPreviousConnections.mockImplementation(() => {
+      return Promise.resolve([]);
+    });
+    mockSaveConnections.mockImplementation(() => {
       return Promise.resolve();
     });
     mockClient.setup(c => c.id).returns(() => TEST_CLIENT_ID);
@@ -102,9 +112,10 @@ describe("Event Handler", () => {
   });
 
   describe("on Ready event", () => {
-    test("should log the client ready event", () => {
-      eventHandler.onReady();
+    test("should log the client ready event", async () => {
+      const result = eventHandler.onReady();
 
+      await expect(result).resolves.toBeUndefined();
       expect(mockInfoLog).toBeCalledTimes(1);
     });
   });
