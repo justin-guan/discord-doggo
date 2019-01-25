@@ -14,6 +14,15 @@ jest.mock("@handlers/base/event-handler", () => {
   return mockEventHandler;
 });
 
+import { Collection as MockCollection } from "../../mocks/discord.js/collection";
+import { VoiceChannel as MockVoiceChannel } from "../../mocks/discord.js/voice-channel";
+jest.mock("discord.js", () => {
+  return {
+    VoiceChannel: MockVoiceChannel,
+    Collection: MockCollection
+  };
+});
+
 import DiscordEventHandler from "@handlers/discord/discord-event-handler";
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
 import DiscordMessageImpl from "@model/discord/discord-message-impl";

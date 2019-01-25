@@ -1,36 +1,9 @@
+import { Collection as MockCollection } from "../../mocks/discord.js/collection";
+import { VoiceChannel as MockVoiceChannel } from "../../mocks/discord.js/voice-channel";
 jest.mock("discord.js", () => {
   return {
-    VoiceChannel: class {
-      public join = jest.fn();
-    },
-    // tslint:disable-next-line:max-classes-per-file
-    Collection: class C<K, V> extends Map<K, V> {
-      public some(predicate: (vc: V) => boolean): boolean {
-        for (const entry of this.entries()) {
-          if (predicate(entry[1])) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      public map<T>(predicate: (vc: V) => T): T[] {
-        const mapped: T[] = [];
-        for (const entry of this.entries()) {
-          mapped.push(predicate(entry[1]));
-        }
-        return mapped;
-      }
-
-      public find(predicate: (vc: V) => boolean): V {
-        for (const entry of this.entries()) {
-          if (predicate(entry[1])) {
-            return entry[1];
-          }
-        }
-        return (null as unknown) as V;
-      }
-    }
+    VoiceChannel: MockVoiceChannel,
+    Collection: MockCollection
   };
 });
 
