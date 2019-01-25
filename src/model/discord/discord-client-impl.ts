@@ -22,7 +22,7 @@ export default class DiscordClientImpl implements Client {
 
   public async joinVoiceChannel(voiceChannelId: string): Promise<void> {
     const channel = this.client.channels.get(voiceChannelId);
-    if (channel && channel instanceof VoiceChannel) {
+    if (channel instanceof VoiceChannel) {
       await (channel as VoiceChannel).join();
     } else {
       return Promise.reject(

@@ -3,11 +3,15 @@
 const mockDatabaseInitialize = jest.fn();
 const mockDatabaseClose = jest.fn();
 const mockGetGuild = jest.fn();
+const mockGetPreviousConnections = jest.fn();
+const mockSaveConnections = jest.fn();
 jest.mock("@store/mongo/database-store", () => {
   return class {
     public connect = mockDatabaseInitialize;
     public close = mockDatabaseClose;
     public getGuild = mockGetGuild;
+    public getPreviousConnections = mockGetPreviousConnections;
+    public saveConnections = mockSaveConnections;
   };
 });
 const mockGetCommand = jest.fn();
@@ -190,6 +194,47 @@ describe("Store", () => {
     expect(command).toBeUndefined();
   });
 
+  test("should get previous connections", async () => {
+    const testVoiceChannelId = "test voice channel id";
+    mockGetPreviousConnections.mockImplementation(() => {
+      return Promise.resolve([testVoiceChannelId]);
+    });
+
+    const result = store.getPreviousConnections();
+
+    await expect(result).resolves.toEqual([testVoiceChannelId]);
+  });
+
+  test("should fail to get previous connections", async () => {
+    mockGetPreviousConnections.mockImplementation(() => {
+      return Promise.reject();
+    });
+
+    const result = store.getPreviousConnections();
+
+    await expect(result).rejects.toBeUndefined();
+  });
+
+  test("should save current connections", async () => {
+    mockSaveConnections.mockImplementation(() => {
+      return Promise.resolve();
+    });
+
+    const result = store.saveConnections([]);
+
+    await expect(result).resolves.toBeUndefined();
+  });
+
+  test("should fail to save current connections", async () => {
+    mockSaveConnections.mockImplementation(() => {
+      return Promise.reject();
+    });
+
+    const result = store.saveConnections([]);
+
+    await expect(result).rejects.toBeUndefined();
+  });
+
   function setupMockGuild(): void {
     // ok to ignore any rule because of mock limitations
     // tslint:disable-next-line:no-any
@@ -200,6 +245,8 @@ describe("Store", () => {
     mockDatabaseInitialize.mockReset();
     mockDatabaseClose.mockReset();
     mockGetGuild.mockReset();
+    mockGetPreviousConnections.mockReset();
+    mockSaveConnections.mockReset();
     mockGuild.reset();
   }
 });
