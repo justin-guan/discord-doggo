@@ -1,11 +1,14 @@
 import { Database } from "@store/base/database";
+import ClientVoiceConnectionsConfig from "@store/models/client-voice-connections-config";
 import Guild from "@store/models/guild";
+import * as DatabaseClientVoiceConnectionsConfigModel from "@store/mongo/database-models/client-voice-connections-config";
 import * as DatabaseGuildModel from "@store/mongo/database-models/guild";
 import mongoose from "mongoose";
 
 export default class DatabaseStore implements Database {
   private database = mongoose.connection;
   private guildCache = new Map<string, Guild>();
+  private connectionsConfig: ClientVoiceConnectionsConfig | undefined;
 
   public async connect(uri: string): Promise<void> {
     await mongoose.connect(
@@ -33,5 +36,24 @@ export default class DatabaseStore implements Database {
       this.guildCache.set(id, guild);
     }
     return guild;
+  }
+
+  public async getPreviousConnections(): Promise<string[]> {
+    const connectionsConfig = await this.getClientVoiceConnectionsConfig();
+    return connectionsConfig.getLastJoinedVoiceChannelIds();
+  }
+
+  public async saveConnections(voiceChannelIds: string[]): Promise<void> {
+    const connectionsConfig = await this.getClientVoiceConnectionsConfig();
+    await connectionsConfig.saveConnectedVoiceChannelIds(voiceChannelIds);
+  }
+
+  private async getClientVoiceConnectionsConfig(): Promise<
+    ClientVoiceConnectionsConfig
+  > {
+    if (!this.connectionsConfig) {
+      this.connectionsConfig = await DatabaseClientVoiceConnectionsConfigModel.ClientVoiceConnectionsConfig.getConnectionsConfig();
+    }
+    return this.connectionsConfig;
   }
 }

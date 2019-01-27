@@ -19,6 +19,19 @@ jest.mock("@store/mongo/database-models/guild", () => {
   };
 });
 
+const mockGetConnectionsConfig = jest.fn();
+jest.mock(
+  "@store/mongo/database-models/client-voice-connections-config",
+  () => {
+    return {
+      ClientVoiceConnectionsConfig: {
+        getConnectionsConfig: mockGetConnectionsConfig
+      }
+    };
+  }
+);
+
+import ClientVoiceConnectionsConfig from "@store/models/client-voice-connections-config";
 import Guild from "@store/models/guild";
 import DatabaseStore from "@store/mongo/database-store";
 
@@ -182,11 +195,84 @@ describe("Database Store", () => {
     expect(mockGuildSchemaFindGuild).not.toBeCalled();
   });
 
+  test("should return cached version of config if it already exists", async () => {
+    const testVoiceChannelId = "test voice channel id";
+    const config = createVoiceConnectionConfigMock(
+      [testVoiceChannelId],
+      Promise.resolve()
+    );
+    mockGetConnectionsConfig.mockImplementation(() => {
+      return Promise.resolve(config);
+    });
+
+    await databaseStore.getPreviousConnections();
+    await databaseStore.getPreviousConnections();
+
+    expect(mockGetConnectionsConfig).toBeCalledTimes(1);
+  });
+
+  test("should get list of previous session voice channel ids", async () => {
+    const testVoiceChannelId = "test voice channel id";
+    const config = createVoiceConnectionConfigMock(
+      [testVoiceChannelId],
+      Promise.resolve()
+    );
+    mockGetConnectionsConfig.mockImplementation(() => {
+      return Promise.resolve(config);
+    });
+
+    const result = databaseStore.getPreviousConnections();
+
+    await expect(result).resolves.toEqual([testVoiceChannelId]);
+  });
+
+  test("should fail to get list of previous session voice channel ids", async () => {
+    const testVoiceChannelId = "test voice channel id";
+    mockGetConnectionsConfig.mockImplementation(() => {
+      return Promise.reject();
+    });
+
+    const result = databaseStore.getPreviousConnections();
+
+    await expect(result).rejects.toBeUndefined();
+  });
+
+  test("should save connected voice channel ids", async () => {
+    const testVoiceChannelId = "test voice channel id";
+    const config = createVoiceConnectionConfigMock(
+      [testVoiceChannelId],
+      Promise.resolve()
+    );
+    mockGetConnectionsConfig.mockImplementation(() => {
+      return Promise.resolve(config);
+    });
+
+    const result = databaseStore.saveConnections([testVoiceChannelId]);
+
+    await expect(result).resolves.toBeUndefined();
+  });
+
+  test("should fail to save connected voice channel ids", async () => {
+    const testVoiceChannelId = "test voice channel id";
+    const config = createVoiceConnectionConfigMock(
+      [testVoiceChannelId],
+      Promise.reject()
+    );
+    mockGetConnectionsConfig.mockImplementation(() => {
+      return Promise.resolve(config);
+    });
+
+    const result = databaseStore.saveConnections([testVoiceChannelId]);
+
+    await expect(result).rejects.toBeUndefined();
+  });
+
   function resetMocks(): void {
     mockMongooseConnect.mockReset();
     mockMongooseConnectionClose.mockReset();
     mockGuildSchemaFindAllGuilds.mockReset();
     mockGuildSchemaFindGuild.mockReset();
+    mockGetConnectionsConfig.mockReset();
   }
 
   function createGuildMock(id: string): Guild {
@@ -197,5 +283,16 @@ describe("Database Store", () => {
       save: () => Promise.resolve(guild)
     };
     return guild;
+  }
+
+  function createVoiceConnectionConfigMock(
+    lastVoiceChannelIds: string[],
+    save: Promise<void>
+  ): ClientVoiceConnectionsConfig {
+    const config: ClientVoiceConnectionsConfig = {
+      getLastJoinedVoiceChannelIds: () => lastVoiceChannelIds,
+      saveConnectedVoiceChannelIds: () => save
+    };
+    return config;
   }
 });

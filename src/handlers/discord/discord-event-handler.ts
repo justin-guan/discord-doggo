@@ -24,8 +24,8 @@ export default class DiscordEventHandler {
     await this.eventHandler.destroy();
   }
 
-  public onReady = (): void => {
-    this.eventHandler.onReady();
+  public onReady = async (): Promise<void> => {
+    await this.eventHandler.onReady();
   };
 
   public onMessage = async (discordMessage: DiscordMessage): Promise<void> => {

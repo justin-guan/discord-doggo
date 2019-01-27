@@ -31,6 +31,14 @@ export default class Store {
   ): Command | undefined {
     return this.commandStore.getCommand(serverId, commandName);
   }
+
+  public getPreviousConnections(): Promise<string[]> {
+    return this.databaseStore.getPreviousConnections();
+  }
+
+  public async saveConnections(voiceChannelIds: string[]): Promise<void> {
+    await this.databaseStore.saveConnections(voiceChannelIds);
+  }
 }
 
 export interface CommandPrefixUpdate {

@@ -39,6 +39,10 @@ describe("Event Handler", () => {
   Store.prototype.initialize = mockStoreInitialize;
   const mockStoreDestroy = jest.fn();
   Store.prototype.destroy = mockStoreDestroy;
+  const mockStoreGetPreviousConnections = jest.fn();
+  Store.prototype.getPreviousConnections = mockStoreGetPreviousConnections;
+  const mockSaveConnections = jest.fn();
+  Store.prototype.saveConnections = mockSaveConnections;
   const mockClient = TypeMoq.Mock.ofType<Client>();
 
   beforeEach(() => {
@@ -47,6 +51,12 @@ describe("Event Handler", () => {
       return Promise.resolve();
     });
     mockStoreDestroy.mockImplementation(() => {
+      return Promise.resolve();
+    });
+    mockStoreGetPreviousConnections.mockImplementation(() => {
+      return Promise.resolve([]);
+    });
+    mockSaveConnections.mockImplementation(() => {
       return Promise.resolve();
     });
     mockClient.setup(c => c.id).returns(() => TEST_CLIENT_ID);
@@ -102,10 +112,44 @@ describe("Event Handler", () => {
   });
 
   describe("on Ready event", () => {
-    test("should log the client ready event", () => {
-      eventHandler.onReady();
+    test("should log the client ready event", async () => {
+      const result = eventHandler.onReady();
 
+      await expect(result).resolves.toBeUndefined();
       expect(mockInfoLog).toBeCalledTimes(1);
+    });
+
+    test("should reconnect to previous voice channels", async () => {
+      const testVoiceChannelId1 = "test voice channel id 1";
+      const testVoiceChannelId2 = "test voice channel id 2";
+      const testVoiceChannelIds = [testVoiceChannelId1, testVoiceChannelId2];
+      mockStoreGetPreviousConnections.mockImplementation(() => {
+        return Promise.resolve(testVoiceChannelIds);
+      });
+
+      const result = eventHandler.onReady();
+
+      await expect(result).resolves.toBeUndefined();
+      expect(mockInfoLog).toBeCalledTimes(1);
+      testVoiceChannelIds.forEach(id => {
+        mockClient.verify(c => c.joinVoiceChannel(id), TypeMoq.Times.once());
+      });
+    });
+
+    test("should fail to reconnect to previous voice channels", async () => {
+      const testVoiceChannelId1 = "test voice channel id 1";
+      const testVoiceChannelId2 = "test voice channel id 2";
+      const testVoiceChannelIds = [testVoiceChannelId1, testVoiceChannelId2];
+      mockStoreGetPreviousConnections.mockImplementation(() => {
+        return Promise.resolve(testVoiceChannelIds);
+      });
+      mockClient
+        .setup(c => c.joinVoiceChannel(TypeMoq.It.isAnyString()))
+        .returns(() => Promise.reject());
+
+      const result = eventHandler.onReady();
+
+      await expect(result).rejects.toBeUndefined();
     });
   });
 
