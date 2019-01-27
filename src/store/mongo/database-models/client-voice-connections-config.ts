@@ -13,11 +13,6 @@ interface ClientVoiceConnectionsConfigModel
 }
 
 const schema = new Schema({
-  setting: {
-    type: String,
-    default: "connections",
-    required: true
-  },
   voiceChannelIds: [String]
 });
 
@@ -32,11 +27,11 @@ schema.methods.saveConnections = function saveConnections(
 schema.statics.getConnectionsConfig = async function getConnectionsConfig(): Promise<
   ClientVoiceConnectionsConfig
 > {
-  const config = await ClientConfig.findOne({ setting: "connections" });
+  const config = await ClientVoiceConnectionsConfig.findOne({}).exec();
   if (config !== null) {
     return new StoreVoiceConnectionsClientConfig(config);
   }
-  const newConfig = new ClientConfig();
+  const newConfig = new ClientVoiceConnectionsConfig();
   await newConfig.save();
   return new StoreVoiceConnectionsClientConfig(newConfig);
 };
@@ -61,7 +56,6 @@ class StoreVoiceConnectionsClientConfig
   }
 }
 
-export const ClientConfig = model<ClientVoiceConnectionsConfigDocument>(
-  "ClientConfig",
-  schema
-) as ClientVoiceConnectionsConfigModel;
+export const ClientVoiceConnectionsConfig = model<
+  ClientVoiceConnectionsConfigDocument
+>("ClientVoiceConnectionsConfig", schema) as ClientVoiceConnectionsConfigModel;

@@ -24,7 +24,7 @@ jest.mock(
   "@store/mongo/database-models/client-voice-connections-config",
   () => {
     return {
-      ClientConfig: {
+      ClientVoiceConnectionsConfig: {
         getConnectionsConfig: mockGetConnectionsConfig
       }
     };

@@ -52,7 +52,7 @@ export default class DatabaseStore implements Database {
     ClientVoiceConnectionsConfig
   > {
     if (!this.connectionsConfig) {
-      this.connectionsConfig = await DatabaseClientVoiceConnectionsConfigModel.ClientConfig.getConnectionsConfig();
+      this.connectionsConfig = await DatabaseClientVoiceConnectionsConfigModel.ClientVoiceConnectionsConfig.getConnectionsConfig();
     }
     return this.connectionsConfig;
   }
