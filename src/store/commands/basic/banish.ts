@@ -11,6 +11,10 @@ export default class Banish implements Command {
     return "Banish me from your current voice channel";
   }
 
+  public getExpectedNumberArguments(): number {
+    return 0;
+  }
+
   public async execute(
     message: CommandExecutionData,
     messageSender: MessageSender

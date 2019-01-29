@@ -11,6 +11,10 @@ export default class Summon implements Command {
     return "Summon me to your current voice channel";
   }
 
+  public getExpectedNumberArguments(): number {
+    return 0;
+  }
+
   public async execute(
     message: CommandExecutionData,
     messageSender: MessageSender

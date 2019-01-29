@@ -1,5 +1,6 @@
 import { MessageSender } from "@messenger/base/message-sender";
-import { Commands } from "@store/commands/basic";
+import { Commands as AdminCommands } from "@store/commands/admin";
+import { Commands as BasicCommands } from "@store/commands/basic";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
 
@@ -12,24 +13,48 @@ export default class Help implements Command {
     return "List all commands available for this server";
   }
 
+  public getExpectedNumberArguments(): number {
+    return 0;
+  }
+
   public async execute(
     data: CommandExecutionData,
     messageSender: MessageSender
   ): Promise<void> {
     const basicCommandTitle = [`***__Basic Commands__***`];
-    const basicCommandsToDisplay = [...Commands]
+    const basicCommandsToDisplay = this.createCommandsToDisplay(
+      data.trigger,
+      BasicCommands
+    );
+    const adminCommandTitle = [`***__Admin Commands__***`];
+    const adminCommandsToDisplay = this.createCommandsToDisplay(
+      data.trigger,
+      AdminCommands
+    );
+    const toDisplay = basicCommandTitle.concat(
+      basicCommandsToDisplay,
+      ["\n"],
+      adminCommandTitle,
+      adminCommandsToDisplay
+    );
+    await messageSender.sendSplitMessage(toDisplay);
+  }
+
+  private createCommandsToDisplay(
+    trigger: string,
+    commands: Set<Command>
+  ): string[] {
+    return [...commands]
       .sort((c1: Command, c2: Command) => {
         return c1.getCommandName().localeCompare(c2.getCommandName());
       })
       .map(command => {
         return this.createHelpLine(
-          data.trigger,
+          trigger,
           command.getCommandName(),
           command.getCommandDescription()
         );
       });
-    const toDisplay = basicCommandTitle.concat(basicCommandsToDisplay);
-    await messageSender.sendSplitMessage(toDisplay);
   }
 
   private createHelpLine(

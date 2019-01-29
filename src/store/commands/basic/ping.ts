@@ -11,8 +11,12 @@ export default class Ping implements Command {
     return "Pong!";
   }
 
+  public getExpectedNumberArguments(): number {
+    return 0;
+  }
+
   public async execute(
-    message: CommandExecutionData,
+    data: CommandExecutionData,
     messageSender: MessageSender
   ): Promise<void> {
     await messageSender.sendMessage("pong!");

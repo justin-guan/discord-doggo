@@ -4,6 +4,7 @@ import { MessageSender } from "@messenger/base/message-sender";
 import Client from "@model/base/client";
 import Member from "@model/base/member";
 import Message from "@model/base/message";
+import CommandExecutionDataImpl from "@store/commands/command-execution-data-impl";
 import Store from "@store/store";
 import path from "path";
 
@@ -41,16 +42,11 @@ export default class EventHandler {
     if (!message.message.startsWith(prefix)) {
       return;
     }
-    const commandName = message.message.replace(prefix, "");
+    const data = new CommandExecutionDataImpl(prefix, message, this.store);
+    const commandName = data.commandName;
     const command = await this.store.getCommand(message.serverId, commandName);
     if (command) {
-      await command.execute(
-        {
-          trigger: prefix,
-          rawMessage: message
-        },
-        sender
-      );
+      await command.execute(data, sender);
     }
   }
 
