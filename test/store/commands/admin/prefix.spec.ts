@@ -1,13 +1,13 @@
 import { MessageSender } from "@messenger/base/message-sender";
 import Message from "@model/base/message";
-import Trigger from "@store/commands/admin/trigger";
+import Prefix from "@store/commands/admin/prefix";
 import CommandExecutionData from "@store/commands/command-execution-data";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
 
-describe("Trigger Command", () => {
-  const trigger = new Trigger();
-  const triggerCommandName = "trigger";
+describe("Prefix Command", () => {
+  const prefix = new Prefix();
+  const prefixCommandName = "prefix";
   const testMessage: Message = {
     serverId: "",
     message: "",
@@ -21,7 +21,7 @@ describe("Trigger Command", () => {
   };
   const mockStore = TypeMoq.Mock.ofType<Store>();
   const testExecutionData: CommandExecutionData = {
-    trigger: "!",
+    prefix: "!",
     rawMessage: testMessage,
     store: mockStore.object,
     arguments: ["?"]
@@ -40,7 +40,7 @@ describe("Trigger Command", () => {
   });
 
   test("should return trigger as the command name", () => {
-    expect(trigger.getCommandName()).toEqual(triggerCommandName);
+    expect(prefix.getCommandName()).toEqual(prefixCommandName);
   });
 
   test("should update the command prefix", async () => {
@@ -48,7 +48,7 @@ describe("Trigger Command", () => {
       .setup(s => s.updateCommandPrefix(TypeMoq.It.isAny()))
       .returns(() => Promise.resolve());
 
-    const result = trigger.execute(testExecutionData, mockMessageSender.object);
+    const result = prefix.execute(testExecutionData, mockMessageSender.object);
 
     await expect(result).resolves.toBeUndefined();
     mockStore.verify(
@@ -66,7 +66,7 @@ describe("Trigger Command", () => {
       .setup(s => s.updateCommandPrefix(TypeMoq.It.isAny()))
       .returns(() => Promise.reject());
 
-    const result = trigger.execute(testExecutionData, mockMessageSender.object);
+    const result = prefix.execute(testExecutionData, mockMessageSender.object);
 
     await expect(result).resolves.toBeUndefined();
     mockStore.verify(

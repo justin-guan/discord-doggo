@@ -24,12 +24,12 @@ export default class Help extends CommandImpl implements Command {
   ): Promise<void> {
     const basicCommandTitle = [`***__Basic Commands__***`];
     const basicCommandsToDisplay = this.createCommandsToDisplay(
-      data.trigger,
+      data.prefix,
       BasicCommands
     );
     const adminCommandTitle = [`***__Admin Commands__***`];
     const adminCommandsToDisplay = this.createCommandsToDisplay(
-      data.trigger,
+      data.prefix,
       AdminCommands
     );
     const toDisplay = basicCommandTitle.concat(
@@ -42,7 +42,7 @@ export default class Help extends CommandImpl implements Command {
   }
 
   private createCommandsToDisplay(
-    trigger: string,
+    prefix: string,
     commands: Set<Command>
   ): string[] {
     return [...commands]
@@ -51,7 +51,7 @@ export default class Help extends CommandImpl implements Command {
       })
       .map(command => {
         return this.createHelpLine(
-          trigger,
+          prefix,
           command.getCommandName(),
           command.getCommandDescription()
         );
@@ -59,10 +59,10 @@ export default class Help extends CommandImpl implements Command {
   }
 
   private createHelpLine(
-    trigger: string,
+    prefix: string,
     name: string,
     description: string
   ): string {
-    return `**${trigger}${name}** - ${description}`;
+    return `**${prefix}${name}** - ${description}`;
   }
 }

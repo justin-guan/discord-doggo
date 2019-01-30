@@ -22,7 +22,7 @@ describe("Summon Command", () => {
     }
   };
   const testExecutionData: CommandExecutionData = {
-    trigger: "!",
+    prefix: "!",
     rawMessage: testMessage,
     store: TypeMoq.Mock.ofType<Store>().object,
     arguments: []

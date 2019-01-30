@@ -14,13 +14,13 @@ export default abstract class CommandImpl implements Command {
       await this.executeCommand(data, messageSender);
     } else {
       await messageSender.replyMessage(
-        `Invalid command usage\nUsage: ${this.validUsageTemplate(data.trigger)}`
+        `Invalid command usage\nUsage: ${this.validUsageTemplate(data.prefix)}`
       );
     }
   }
 
-  protected validUsageTemplate(trigger: string): string {
-    return `${trigger}${this.getCommandName()}`;
+  protected validUsageTemplate(prefix: string): string {
+    return `${prefix}${this.getCommandName()}`;
   }
 
   protected abstract executeCommand(

@@ -55,7 +55,7 @@ describe("Help Command", () => {
     }
   };
   const testExecutionData: CommandExecutionData = {
-    trigger: "!",
+    prefix: "!",
     rawMessage: testMessage,
     store: TypeMoq.Mock.ofType<Store>().object,
     arguments: []
@@ -115,7 +115,7 @@ describe("Help Command", () => {
 
   test("should not execute because the number of arguments is invalid", async () => {
     const badData: CommandExecutionData = {
-      trigger: "!",
+      prefix: "!",
       rawMessage: testMessage,
       store: TypeMoq.Mock.ofType<Store>().object,
       arguments: ["invalid"]

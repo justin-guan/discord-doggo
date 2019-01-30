@@ -45,7 +45,7 @@ describe("Command Store", () => {
     async (command: Command) => {
       const testMessage = createTestMessage(true);
       const badData: CommandExecutionData = {
-        trigger: "!",
+        prefix: "!",
         rawMessage: testMessage,
         store: TypeMoq.Mock.ofType<Store>().object,
         arguments: createFakeArguments(command.getExpectedNumberArguments() + 1)
@@ -71,7 +71,7 @@ describe("Command Store", () => {
     async (command: Command) => {
       const testMessage = createTestMessage(false);
       const data: CommandExecutionData = {
-        trigger: "!",
+        prefix: "!",
         rawMessage: testMessage,
         store: TypeMoq.Mock.ofType<Store>().object,
         arguments: createFakeArguments(command.getExpectedNumberArguments())

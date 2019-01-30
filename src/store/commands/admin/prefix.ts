@@ -3,21 +3,21 @@ import AdminCommand from "@store/commands/admin/admin-command";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
 
-export default class Trigger extends AdminCommand implements Command {
+export default class Prefix extends AdminCommand implements Command {
   public getCommandName(): string {
-    return "trigger";
+    return "prefix";
   }
 
   public getCommandDescription(): string {
-    return "Change the trigger for commands";
+    return "Change the prefix for commands";
   }
 
   public getExpectedNumberArguments(): number {
     return 1;
   }
 
-  protected validUsageTemplate(trigger: string): string {
-    return `${trigger}${this.getCommandName()} <new trigger>`;
+  protected validUsageTemplate(prefix: string): string {
+    return `${prefix}${this.getCommandName()} <new prefix>`;
   }
 
   protected async executeCommand(
