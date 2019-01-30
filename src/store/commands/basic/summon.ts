@@ -1,9 +1,9 @@
 import { MessageSender } from "@messenger/base/message-sender";
+import AbstractCommand from "@store/commands/abstract-command";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
-import CommandImpl from "@store/commands/command-impl";
 
-export default class Summon extends CommandImpl implements Command {
+export default class Summon extends AbstractCommand implements Command {
   public getCommandName(): string {
     return "summon";
   }

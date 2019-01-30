@@ -2,7 +2,7 @@ import { MessageSender } from "@messenger/base/message-sender";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
 
-export default abstract class CommandImpl implements Command {
+export default abstract class AbstractCommand implements Command {
   public abstract getCommandName(): string;
   public abstract getCommandDescription(): string;
   public abstract getExpectedNumberArguments(): number;

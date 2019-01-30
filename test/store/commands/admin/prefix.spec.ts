@@ -39,7 +39,7 @@ describe("Prefix Command", () => {
     mockMessageSender.reset();
   });
 
-  test("should return trigger as the command name", () => {
+  test("should return prefix as the command name", () => {
     expect(prefix.getCommandName()).toEqual(prefixCommandName);
   });
 

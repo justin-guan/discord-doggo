@@ -1,9 +1,9 @@
 import { MessageSender } from "@messenger/base/message-sender";
+import AbstractCommand from "@store/commands/abstract-command";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
-import CommandImpl from "@store/commands/command-impl";
 
-export default abstract class AdminCommand extends CommandImpl
+export default abstract class AdminCommand extends AbstractCommand
   implements Command {
   public abstract getCommandName(): string;
   public abstract getCommandDescription(): string;
