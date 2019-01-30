@@ -2,12 +2,12 @@ import { MessageSender } from "@messenger/base/message-sender";
 import Message from "@model/base/message";
 import Banish from "@store/commands/basic/banish";
 import CommandExecutionData from "@store/commands/command-execution-data";
+import Store from "@store/store";
 import * as TypeMoq from "typemoq";
 
 describe("Banish Command", () => {
   const banish = new Banish();
   const banishCommandName = "banish";
-  const empty = "";
 
   const mockBanish = jest.fn();
   const testMessage: Message = {
@@ -17,12 +17,15 @@ describe("Banish Command", () => {
       isBot: false,
       name: "",
       joinCurrentVoiceChannel: jest.fn(),
-      leaveCurrentVoiceChannel: mockBanish
+      leaveCurrentVoiceChannel: mockBanish,
+      isAdmin: () => false
     }
   };
   const testExecutionData: CommandExecutionData = {
     trigger: "!",
-    rawMessage: testMessage
+    rawMessage: testMessage,
+    store: TypeMoq.Mock.ofType<Store>().object,
+    arguments: []
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();
 
@@ -39,10 +42,6 @@ describe("Banish Command", () => {
 
   test("should return banish as the command name", () => {
     expect(banish.getCommandName()).toEqual(banishCommandName);
-  });
-
-  test("should return the banish command description", () => {
-    expect(banish.getCommandDescription()).not.toEqual(empty);
   });
 
   test("should banish from the author voice channel", async () => {

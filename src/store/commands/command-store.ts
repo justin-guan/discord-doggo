@@ -1,13 +1,13 @@
-import { Commands } from "@store/commands/basic";
+import { Commands as AdminCommands } from "@store/commands/admin";
+import { Commands as BasicCommands } from "@store/commands/basic";
 import Command from "@store/commands/command";
 
 export default class CommandStore {
   private commands: Map<string, Command> = new Map();
 
   constructor() {
-    Commands.forEach(command => {
-      this.commands.set(command.getCommandName(), command);
-    });
+    this.setCommands(BasicCommands);
+    this.setCommands(AdminCommands);
   }
 
   public getCommand(
@@ -15,5 +15,11 @@ export default class CommandStore {
     commandName: string
   ): Command | undefined {
     return this.commands.get(commandName);
+  }
+
+  private setCommands(commands: Set<Command>): void {
+    commands.forEach(command => {
+      this.commands.set(command.getCommandName(), command);
+    });
   }
 }

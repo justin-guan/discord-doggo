@@ -2,12 +2,12 @@ import { MessageSender } from "@messenger/base/message-sender";
 import Message from "@model/base/message";
 import Ping from "@store/commands/basic/ping";
 import CommandExecutionData from "@store/commands/command-execution-data";
+import Store from "@store/store";
 import * as TypeMoq from "typemoq";
 
 describe("Ping Command", () => {
   const ping = new Ping();
   const pingCommandName = "ping";
-  const empty = "";
   const testMessage: Message = {
     serverId: "",
     message: "",
@@ -15,12 +15,15 @@ describe("Ping Command", () => {
       isBot: false,
       name: "",
       joinCurrentVoiceChannel: jest.fn(),
-      leaveCurrentVoiceChannel: jest.fn()
+      leaveCurrentVoiceChannel: jest.fn(),
+      isAdmin: () => false
     }
   };
   const testExecutionData: CommandExecutionData = {
     trigger: "!",
-    rawMessage: testMessage
+    rawMessage: testMessage,
+    store: TypeMoq.Mock.ofType<Store>().object,
+    arguments: []
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();
 
@@ -30,10 +33,6 @@ describe("Ping Command", () => {
 
   test("should return ping as the command name", () => {
     expect(ping.getCommandName()).toEqual(pingCommandName);
-  });
-
-  test("should return the ping command description", () => {
-    expect(ping.getCommandDescription()).not.toEqual(empty);
   });
 
   test("should send pong when executed", async () => {

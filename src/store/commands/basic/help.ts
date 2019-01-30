@@ -3,8 +3,9 @@ import { Commands as AdminCommands } from "@store/commands/admin";
 import { Commands as BasicCommands } from "@store/commands/basic";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
+import CommandImpl from "@store/commands/command-impl";
 
-export default class Help implements Command {
+export default class Help extends CommandImpl implements Command {
   public getCommandName(): string {
     return "help";
   }
@@ -17,7 +18,7 @@ export default class Help implements Command {
     return 0;
   }
 
-  public async execute(
+  protected async executeCommand(
     data: CommandExecutionData,
     messageSender: MessageSender
   ): Promise<void> {

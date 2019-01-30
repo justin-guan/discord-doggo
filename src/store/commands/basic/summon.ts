@@ -1,8 +1,9 @@
 import { MessageSender } from "@messenger/base/message-sender";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
+import CommandImpl from "@store/commands/command-impl";
 
-export default class Summon implements Command {
+export default class Summon extends CommandImpl implements Command {
   public getCommandName(): string {
     return "summon";
   }
@@ -15,7 +16,7 @@ export default class Summon implements Command {
     return 0;
   }
 
-  public async execute(
+  protected async executeCommand(
     message: CommandExecutionData,
     messageSender: MessageSender
   ): Promise<void> {

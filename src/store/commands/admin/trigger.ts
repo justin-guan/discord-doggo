@@ -25,10 +25,15 @@ export default class Trigger extends AdminCommand implements Command {
     messageSender: MessageSender
   ): Promise<void> {
     const prefix = data.arguments[0];
-    await data.store.updateCommandPrefix({
-      serverId: data.rawMessage.serverId,
-      newPrefix: prefix
-    });
+    try {
+      await data.store.updateCommandPrefix({
+        serverId: data.rawMessage.serverId,
+        newPrefix: prefix
+      });
+    } catch (e) {
+      await messageSender.replyMessage("Failed to update prefix");
+      return;
+    }
     await messageSender.replyMessage(`Command prefix updated to ${prefix}`);
   }
 }

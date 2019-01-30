@@ -274,7 +274,8 @@ describe("Event Handler", () => {
           isBot,
           name: "",
           joinCurrentVoiceChannel: () => Promise.resolve(),
-          leaveCurrentVoiceChannel: () => Promise.resolve()
+          leaveCurrentVoiceChannel: () => Promise.resolve(),
+          isAdmin: () => false
         };
       });
       mock.setup(m => m.message).returns(() => {
