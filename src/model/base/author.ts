@@ -4,4 +4,5 @@ export default interface Author {
 
   joinCurrentVoiceChannel(): Promise<void>;
   leaveCurrentVoiceChannel(): Promise<void>;
+  isAdmin(): boolean;
 }

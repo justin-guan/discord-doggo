@@ -35,4 +35,14 @@ export default class DiscordAuthorImpl implements Author {
       return Promise.reject();
     }
   }
+
+  public isAdmin(): boolean {
+    const adminRole = this.discordMessage.guild.roles.find(
+      role => role.name === "Admin"
+    );
+    if (adminRole === null || adminRole.id === null) {
+      return false;
+    }
+    return this.discordMessage.member.roles.has(adminRole.id);
+  }
 }

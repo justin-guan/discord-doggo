@@ -195,7 +195,7 @@ describe("Event Handler", () => {
       expect(mockCommandExecute).toBeCalledTimes(1);
       expect(mockCommandExecute).toBeCalledWith(
         expect.objectContaining({
-          trigger: testPrefix,
+          prefix: testPrefix,
           rawMessage: mockMessage.object
         }),
         mockMessageSender.object
@@ -246,7 +246,7 @@ describe("Event Handler", () => {
       expect(mockCommandExecute).toBeCalledTimes(1);
       expect(mockCommandExecute).toBeCalledWith(
         expect.objectContaining({
-          trigger: testPrefix,
+          prefix: testPrefix,
           rawMessage: mockMessage.object
         }),
         mockMessageSender.object
@@ -274,7 +274,8 @@ describe("Event Handler", () => {
           isBot,
           name: "",
           joinCurrentVoiceChannel: () => Promise.resolve(),
-          leaveCurrentVoiceChannel: () => Promise.resolve()
+          leaveCurrentVoiceChannel: () => Promise.resolve(),
+          isAdmin: () => false
         };
       });
       mock.setup(m => m.message).returns(() => {

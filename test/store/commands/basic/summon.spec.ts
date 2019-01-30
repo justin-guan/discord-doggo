@@ -2,12 +2,12 @@ import { MessageSender } from "@messenger/base/message-sender";
 import Message from "@model/base/message";
 import Summon from "@store/commands/basic/summon";
 import CommandExecutionData from "@store/commands/command-execution-data";
+import Store from "@store/store";
 import * as TypeMoq from "typemoq";
 
 describe("Summon Command", () => {
   const summon = new Summon();
   const summonCommandName = "summon";
-  const empty = "";
 
   const mockJoin = jest.fn();
   const testMessage: Message = {
@@ -17,12 +17,15 @@ describe("Summon Command", () => {
       isBot: false,
       name: "",
       joinCurrentVoiceChannel: mockJoin,
-      leaveCurrentVoiceChannel: jest.fn()
+      leaveCurrentVoiceChannel: jest.fn(),
+      isAdmin: () => false
     }
   };
   const testExecutionData: CommandExecutionData = {
-    trigger: "!",
-    rawMessage: testMessage
+    prefix: "!",
+    rawMessage: testMessage,
+    store: TypeMoq.Mock.ofType<Store>().object,
+    arguments: []
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();
 
@@ -39,10 +42,6 @@ describe("Summon Command", () => {
 
   test("should return summon as the command name", () => {
     expect(summon.getCommandName()).toEqual(summonCommandName);
-  });
-
-  test("should return the summon command description", () => {
-    expect(summon.getCommandDescription()).not.toEqual(empty);
   });
 
   test("should join the author voice channel", async () => {

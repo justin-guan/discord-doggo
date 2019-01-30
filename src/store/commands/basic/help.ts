@@ -1,9 +1,11 @@
 import { MessageSender } from "@messenger/base/message-sender";
-import { Commands } from "@store/commands/basic";
+import AbstractCommand from "@store/commands/abstract-command";
+import { Commands as AdminCommands } from "@store/commands/admin";
+import { Commands as BasicCommands } from "@store/commands/basic";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
 
-export default class Help implements Command {
+export default class Help extends AbstractCommand implements Command {
   public getCommandName(): string {
     return "help";
   }
@@ -12,31 +14,55 @@ export default class Help implements Command {
     return "List all commands available for this server";
   }
 
-  public async execute(
+  public getExpectedNumberArguments(): number {
+    return 0;
+  }
+
+  protected async executeCommand(
     data: CommandExecutionData,
     messageSender: MessageSender
   ): Promise<void> {
     const basicCommandTitle = [`***__Basic Commands__***`];
-    const basicCommandsToDisplay = [...Commands]
+    const basicCommandsToDisplay = this.createCommandsToDisplay(
+      data.prefix,
+      BasicCommands
+    );
+    const adminCommandTitle = [`***__Admin Commands__***`];
+    const adminCommandsToDisplay = this.createCommandsToDisplay(
+      data.prefix,
+      AdminCommands
+    );
+    const toDisplay = basicCommandTitle.concat(
+      basicCommandsToDisplay,
+      ["\n"],
+      adminCommandTitle,
+      adminCommandsToDisplay
+    );
+    await messageSender.sendSplitMessage(toDisplay);
+  }
+
+  private createCommandsToDisplay(
+    prefix: string,
+    commands: Set<Command>
+  ): string[] {
+    return [...commands]
       .sort((c1: Command, c2: Command) => {
         return c1.getCommandName().localeCompare(c2.getCommandName());
       })
       .map(command => {
         return this.createHelpLine(
-          data.trigger,
+          prefix,
           command.getCommandName(),
           command.getCommandDescription()
         );
       });
-    const toDisplay = basicCommandTitle.concat(basicCommandsToDisplay);
-    await messageSender.sendSplitMessage(toDisplay);
   }
 
   private createHelpLine(
-    trigger: string,
+    prefix: string,
     name: string,
     description: string
   ): string {
-    return `**${trigger}${name}** - ${description}`;
+    return `**${prefix}${name}** - ${description}`;
   }
 }
