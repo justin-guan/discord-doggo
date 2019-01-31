@@ -7,7 +7,8 @@
     "build": "npx webpack --mode none --progress --colors",
     "prestart": "npm run build",
     "start": "node dist/app.js",
-    "test": "npx jest"
+    "test": "npx jest",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "Discord",
