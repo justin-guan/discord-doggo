@@ -35,7 +35,7 @@ export default class EventHandler {
     sender: MessageSender,
     message: Message
   ): Promise<void> {
-    if (message.author.isBot) {
+    if (message.author.isBot || message.isDirectMessage) {
       return;
     }
     const prefix = await this.store.getCommandPrefix(message.serverId);

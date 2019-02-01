@@ -52,7 +52,8 @@ describe("Help Command", () => {
       joinCurrentVoiceChannel: jest.fn(),
       leaveCurrentVoiceChannel: jest.fn(),
       isAdmin: () => false
-    }
+    },
+    isDirectMessage: false
   };
   const testExecutionData: CommandExecutionData = {
     prefix: "!",

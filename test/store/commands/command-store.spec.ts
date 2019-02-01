@@ -107,7 +107,8 @@ describe("Command Store", () => {
         joinCurrentVoiceChannel: jest.fn(),
         leaveCurrentVoiceChannel: jest.fn(),
         isAdmin: () => isAdmin
-      }
+      },
+      isDirectMessage: false
     };
   }
 });

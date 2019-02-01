@@ -4,4 +4,5 @@ export default interface Message {
   readonly serverId: string;
   readonly message: string;
   readonly author: Author;
+  readonly isDirectMessage: boolean;
 }

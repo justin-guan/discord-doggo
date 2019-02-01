@@ -19,7 +19,8 @@ describe("Summon Command", () => {
       joinCurrentVoiceChannel: mockJoin,
       leaveCurrentVoiceChannel: jest.fn(),
       isAdmin: () => false
-    }
+    },
+    isDirectMessage: false
   };
   const testExecutionData: CommandExecutionData = {
     prefix: "!",

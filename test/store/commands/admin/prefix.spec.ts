@@ -17,7 +17,8 @@ describe("Prefix Command", () => {
       joinCurrentVoiceChannel: jest.fn(),
       leaveCurrentVoiceChannel: jest.fn(),
       isAdmin: () => true
-    }
+    },
+    isDirectMessage: false
   };
   const mockStore = TypeMoq.Mock.ofType<Store>();
   const testExecutionData: CommandExecutionData = {
