@@ -19,7 +19,8 @@ describe("Banish Command", () => {
       joinCurrentVoiceChannel: jest.fn(),
       leaveCurrentVoiceChannel: mockBanish,
       isAdmin: () => false
-    }
+    },
+    isDirectMessage: false
   };
   const testExecutionData: CommandExecutionData = {
     prefix: "!",

@@ -21,4 +21,8 @@ export default class DiscordMessageImpl implements Message {
   public get author(): Author {
     return new DiscordAuthorImpl(this.discordMessage);
   }
+
+  public get isDirectMessage(): boolean {
+    return this.discordMessage.guild === null;
+  }
 }

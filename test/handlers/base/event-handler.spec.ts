@@ -216,6 +216,21 @@ describe("Event Handler", () => {
       );
     });
 
+    test("should not respond to a DM", async () => {
+      mockMessage = setUpMockMessage(false);
+      mockMessage.setup(m => m.isDirectMessage).returns(() => true);
+
+      await eventHandler.onMessage(
+        mockMessageSender.object,
+        mockMessage.object
+      );
+
+      mockMessageSender.verify(
+        sender => sender.sendMessage(testMessage),
+        TypeMoq.Times.never()
+      );
+    });
+
     test("should not trigger a command", async () => {
       mockGetCommandPrefix.mockImplementation(() => {
         return testNotPrefix;
@@ -281,6 +296,7 @@ describe("Event Handler", () => {
       mock.setup(m => m.message).returns(() => {
         return testMessage;
       });
+      mock.setup(m => m.isDirectMessage).returns(() => false);
       return mock;
     }
 
