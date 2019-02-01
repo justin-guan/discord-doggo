@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "build": "npx webpack --mode none --progress --colors",
-    "prestart": "npm run build",
     "start": "node dist/app.js",
-    "test": "npx jest"
+    "test": "npx jest",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "Discord",
@@ -48,6 +48,7 @@
     "convict": "^4.4.0",
     "discord.js": "^11.4.2",
     "erlpack": "github:discordapp/erlpack",
+    "ffmpeg-binaries": "^4.0.0",
     "libsodium-wrappers": "^0.7.3",
     "mongoose": "^5.3.8",
     "node-opus": "^0.2.9",
@@ -58,6 +59,6 @@
     "winston": "^3.1.0"
   },
   "engines": {
-    "node": ">=8.2.0"
+    "node": "^8.2.0"
   }
 }
