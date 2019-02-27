@@ -2,6 +2,7 @@ import VoiceSynthesizer from "@handlers/base/voice-synthesizer";
 import logger from "@logger";
 import { MessageSender } from "@messenger/base/message-sender";
 import Client from "@model/base/client";
+import { EmojiCount } from "@model/base/emoji-count";
 import Member from "@model/base/member";
 import Message from "@model/base/message";
 import CommandExecutionDataImpl from "@store/commands/command-execution-data-impl";
@@ -107,5 +108,10 @@ export default class EventHandler {
       this.client.joinVoiceChannel(voiceChannelId)
     );
     await Promise.all(joinPromises);
+  }
+
+  private async updateEmojiStats(message: Message): Promise<void> {
+    // message.emojiCount.forEach((id, count) => {
+    // });
   }
 }
