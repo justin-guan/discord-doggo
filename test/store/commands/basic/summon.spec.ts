@@ -4,24 +4,18 @@ import Summon from "@store/commands/basic/summon";
 import CommandExecutionData from "@store/commands/command-execution-data";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
+import testDataGenerator from "../../../utils/test-data-generator";
 
 describe("Summon Command", () => {
   const summon = new Summon();
   const summonCommandName = "summon";
 
   const mockJoin = jest.fn();
-  const testMessage: Message = {
-    serverId: "",
-    message: "",
-    author: {
-      isBot: false,
-      name: "",
-      joinCurrentVoiceChannel: mockJoin,
-      leaveCurrentVoiceChannel: jest.fn(),
-      isAdmin: () => false
-    },
-    isDirectMessage: false
-  };
+  const testMessage: Message = testDataGenerator.generateTestMessage({
+    author: testDataGenerator.generateTestAuthor({
+      joinCurrentVoiceChannel: mockJoin
+    })
+  });
   const testExecutionData: CommandExecutionData = {
     prefix: "!",
     rawMessage: testMessage,

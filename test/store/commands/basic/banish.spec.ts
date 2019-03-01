@@ -4,24 +4,18 @@ import Banish from "@store/commands/basic/banish";
 import CommandExecutionData from "@store/commands/command-execution-data";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
+import testDataGenerator from "../../../utils/test-data-generator";
 
 describe("Banish Command", () => {
   const banish = new Banish();
   const banishCommandName = "banish";
 
   const mockBanish = jest.fn();
-  const testMessage: Message = {
-    serverId: "",
-    message: "",
-    author: {
-      isBot: false,
-      name: "",
-      joinCurrentVoiceChannel: jest.fn(),
-      leaveCurrentVoiceChannel: mockBanish,
-      isAdmin: () => false
-    },
-    isDirectMessage: false
-  };
+  const testMessage: Message = testDataGenerator.generateTestMessage({
+    author: testDataGenerator.generateTestAuthor({
+      leaveCurrentVoiceChannel: mockBanish
+    })
+  });
   const testExecutionData: CommandExecutionData = {
     prefix: "!",
     rawMessage: testMessage,

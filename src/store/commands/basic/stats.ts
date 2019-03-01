@@ -10,7 +10,7 @@ export default class Stats extends AbstractCommand implements Command {
   }
 
   public getCommandDescription(): string {
-    return "Get stats about the emoji usage in this server";
+    return "Get stats about the emoji usage in this server. This may take some time to run";
   }
 
   public getExpectedNumberArguments(): number {

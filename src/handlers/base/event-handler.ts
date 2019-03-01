@@ -39,13 +39,13 @@ export default class EventHandler {
     if (message.author.isBot || message.isDirectMessage) {
       return;
     }
-    const prefix = await this.store.getCommandPrefix(message.serverId);
+    const prefix = await this.store.getCommandPrefix(message.server.id);
     if (!message.message.startsWith(prefix)) {
       return;
     }
     const data = new CommandExecutionDataImpl(prefix, message, this.store);
     const commandName = data.commandName;
-    const command = await this.store.getCommand(message.serverId, commandName);
+    const command = await this.store.getCommand(message.server.id, commandName);
     if (command) {
       await command.execute(data, sender);
     }

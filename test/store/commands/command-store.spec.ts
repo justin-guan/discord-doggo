@@ -8,6 +8,7 @@ import CommandExecutionData from "@store/commands/command-execution-data";
 import CommandStore from "@store/commands/command-store";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
+import testDataGenerator from "../../utils/test-data-generator";
 
 describe("Command Store", () => {
   const commandStore = new CommandStore();
@@ -53,7 +54,8 @@ describe("Command Store", () => {
       const mockMessageSender: MessageSender = {
         sendMessage: jest.fn(),
         sendSplitMessage: jest.fn(),
-        replyMessage: jest.fn()
+        replyMessage: jest.fn(),
+        getFormattedCustomEmoji: jest.fn()
       };
 
       const result = command.execute(badData, mockMessageSender);
@@ -79,7 +81,8 @@ describe("Command Store", () => {
       const mockMessageSender: MessageSender = {
         sendMessage: jest.fn(),
         sendSplitMessage: jest.fn(),
-        replyMessage: jest.fn()
+        replyMessage: jest.fn(),
+        getFormattedCustomEmoji: jest.fn()
       };
 
       const result = command.execute(data, mockMessageSender);
@@ -98,17 +101,10 @@ describe("Command Store", () => {
   }
 
   function createTestMessage(isAdmin: boolean): Message {
-    return {
-      serverId: "",
-      message: "",
-      author: {
-        isBot: false,
-        name: "",
-        joinCurrentVoiceChannel: jest.fn(),
-        leaveCurrentVoiceChannel: jest.fn(),
+    return testDataGenerator.generateTestMessage({
+      author: testDataGenerator.generateTestAuthor({
         isAdmin: () => isAdmin
-      },
-      isDirectMessage: false
-    };
+      })
+    });
   }
 });

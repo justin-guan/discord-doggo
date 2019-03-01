@@ -1,6 +1,14 @@
+import { Collection as MockCollection } from "../../mocks/discord.js/collection";
+
+jest.mock("discord.js", () => {
+  return {
+    Collection: MockCollection
+  };
+});
+
 import DiscordAuthorImpl from "@model/discord/discord-author-impl";
 import DiscordMessageImpl from "@model/discord/discord-message-impl";
-import { Guild, Message, User } from "discord.js";
+import { Collection, Guild, GuildChannel, Message, User } from "discord.js";
 import * as TypeMoq from "typemoq";
 
 describe("Discord Message Implementation", () => {
@@ -44,6 +52,9 @@ describe("Discord Message Implementation", () => {
   function createMockGuild(guildId: string): TypeMoq.IMock<Guild> {
     const mock = TypeMoq.Mock.ofType<Guild>();
     mock.setup(g => g.id).returns(() => guildId);
+    mock
+      .setup(g => g.channels)
+      .returns(() => new Collection<string, GuildChannel>());
     return mock;
   }
 

@@ -4,7 +4,6 @@ import Server from "@model/base/server";
 
 export default interface Message {
   readonly id: string;
-  readonly serverId: string;
   readonly message: string;
   readonly author: Author;
   readonly isDirectMessage: boolean;
