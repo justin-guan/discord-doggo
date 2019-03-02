@@ -38,14 +38,16 @@ export default class ServerStats extends AdminCommand implements Command {
     );
 
     const title = ["***__Server Emoji Stats__***"];
-    const emojiCountInfo = Array.from(map.values()).map(emojiCount => {
-      if (emojiCount.type === EmojiType.CUSTOM) {
-        return `${messageSender.getFormattedCustomEmoji(
-          emojiCount.identifier
-        )}: ${emojiCount.count}`;
-      }
-      return `${emojiCount.identifier}: ${emojiCount.count}`;
-    });
+    const emojiCountInfo = Array.from(map.values())
+      .sort((counter1, counter2) => counter2.count - counter1.count)
+      .map(emojiCount => {
+        if (emojiCount.type === EmojiType.CUSTOM) {
+          return `${messageSender.getFormattedCustomEmoji(
+            emojiCount.identifier
+          )}: ${emojiCount.count}`;
+        }
+        return `${emojiCount.identifier}: ${emojiCount.count}`;
+      });
     await messageSender.sendSplitMessage(title.concat(emojiCountInfo));
   }
 }
