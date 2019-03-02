@@ -46,6 +46,7 @@ export default class EventHandler {
     const commandName = data.commandName;
     const command = await this.store.getCommand(message.server.id, commandName);
     if (command) {
+      await message.delete();
       await command.execute(data, sender);
     }
   }
