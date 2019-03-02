@@ -1,5 +1,5 @@
 import Client from "@model/base/client";
-import { Client as DiscordClient, VoiceChannel } from "discord.js";
+import { Client as DiscordClient, TextChannel, VoiceChannel } from "discord.js";
 
 export default class DiscordClientImpl implements Client {
   private readonly client: DiscordClient;

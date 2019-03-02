@@ -27,7 +27,7 @@ export default class Prefix extends AdminCommand implements Command {
     const prefix = data.arguments[0];
     try {
       await data.store.updateCommandPrefix({
-        serverId: data.rawMessage.serverId,
+        serverId: data.rawMessage.server.id,
         newPrefix: prefix
       });
     } catch (e) {

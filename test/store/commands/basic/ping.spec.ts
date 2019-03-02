@@ -4,22 +4,12 @@ import Ping from "@store/commands/basic/ping";
 import CommandExecutionData from "@store/commands/command-execution-data";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
+import testDataGenerator from "../../../utils/test-data-generator";
 
 describe("Ping Command", () => {
   const ping = new Ping();
   const pingCommandName = "ping";
-  const testMessage: Message = {
-    serverId: "",
-    message: "",
-    author: {
-      isBot: false,
-      name: "",
-      joinCurrentVoiceChannel: jest.fn(),
-      leaveCurrentVoiceChannel: jest.fn(),
-      isAdmin: () => false
-    },
-    isDirectMessage: false
-  };
+  const testMessage: Message = testDataGenerator.generateTestMessage();
   const testExecutionData: CommandExecutionData = {
     prefix: "!",
     rawMessage: testMessage,

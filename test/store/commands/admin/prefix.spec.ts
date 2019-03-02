@@ -4,22 +4,16 @@ import Prefix from "@store/commands/admin/prefix";
 import CommandExecutionData from "@store/commands/command-execution-data";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
+import testDataGenerator from "../../../utils/test-data-generator";
 
 describe("Prefix Command", () => {
   const prefix = new Prefix();
   const prefixCommandName = "prefix";
-  const testMessage: Message = {
-    serverId: "",
-    message: "",
-    author: {
-      isBot: false,
-      name: "",
-      joinCurrentVoiceChannel: jest.fn(),
-      leaveCurrentVoiceChannel: jest.fn(),
+  const testMessage: Message = testDataGenerator.generateTestMessage({
+    author: testDataGenerator.generateTestAuthor({
       isAdmin: () => true
-    },
-    isDirectMessage: false
-  };
+    })
+  });
   const mockStore = TypeMoq.Mock.ofType<Store>();
   const testExecutionData: CommandExecutionData = {
     prefix: "!",
@@ -55,7 +49,7 @@ describe("Prefix Command", () => {
     mockStore.verify(
       s =>
         s.updateCommandPrefix({
-          serverId: testExecutionData.rawMessage.serverId,
+          serverId: testExecutionData.rawMessage.server.id,
           newPrefix: testExecutionData.arguments[0]
         }),
       TypeMoq.Times.once()
@@ -73,7 +67,7 @@ describe("Prefix Command", () => {
     mockStore.verify(
       s =>
         s.updateCommandPrefix({
-          serverId: testExecutionData.rawMessage.serverId,
+          serverId: testExecutionData.rawMessage.server.id,
           newPrefix: testExecutionData.arguments[0]
         }),
       TypeMoq.Times.once()

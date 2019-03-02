@@ -1,5 +1,20 @@
+import { Collection as MockCollection } from "../../mocks/discord.js/collection";
+jest.mock("discord.js", () => {
+  return {
+    Collection: MockCollection
+  };
+});
+
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
-import { DMChannel, GroupDMChannel, Message, TextChannel } from "discord.js";
+import {
+  Client,
+  Collection,
+  DMChannel,
+  Emoji,
+  GroupDMChannel,
+  Message,
+  TextChannel
+} from "discord.js";
 import * as TypeMoq from "typemoq";
 
 describe("Discord Message Sender", () => {
@@ -38,5 +53,35 @@ describe("Discord Message Sender", () => {
     await discordMessageSender.replyMessage(testMessage);
 
     mockMessage.verify(m => m.reply(testMessage), TypeMoq.Times.once());
+  });
+
+  test("should fail to get a custom emoji as a formatted string", () => {
+    const testEmojiId = "emoji id";
+    const mockClient = TypeMoq.Mock.ofType<Client>();
+    mockClient
+      .setup(c => c.emojis)
+      .returns(() => new Collection<string, Emoji>());
+    mockMessage.setup(m => m.client).returns(() => mockClient.object);
+
+    const result = discordMessageSender.getFormattedCustomEmoji(testEmojiId);
+
+    expect(result).toEqual(testEmojiId);
+  });
+
+  test("should get a custom emoji as a formatted string", () => {
+    const testEmojiId = "emoji id";
+    const formattedEmojiString = `<test:${testEmojiId}>`;
+    const mockEmoji = TypeMoq.Mock.ofType<Emoji>();
+    mockEmoji.setup(e => e.id).returns(() => testEmojiId);
+    mockEmoji.setup(e => e.toString()).returns(() => formattedEmojiString);
+    const collection = new Collection<string, Emoji>();
+    collection.set(testEmojiId, mockEmoji.object);
+    const mockClient = TypeMoq.Mock.ofType<Client>();
+    mockClient.setup(c => c.emojis).returns(() => collection);
+    mockMessage.setup(m => m.client).returns(() => mockClient.object);
+
+    const result = discordMessageSender.getFormattedCustomEmoji(testEmojiId);
+
+    expect(result).toEqual(formattedEmojiString);
   });
 });

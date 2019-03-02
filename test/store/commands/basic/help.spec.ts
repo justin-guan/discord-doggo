@@ -5,6 +5,7 @@ import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
+import testDataGenerator from "../../../utils/test-data-generator";
 
 jest.mock("@store/commands/basic", () => {
   return {
@@ -43,18 +44,7 @@ describe("Help Command", () => {
   const helpHeaders = 3;
   const help = new Help();
   const helpCommandName = "help";
-  const testMessage: Message = {
-    serverId: "",
-    message: "",
-    author: {
-      isBot: false,
-      name: "",
-      joinCurrentVoiceChannel: jest.fn(),
-      leaveCurrentVoiceChannel: jest.fn(),
-      isAdmin: () => false
-    },
-    isDirectMessage: false
-  };
+  const testMessage: Message = testDataGenerator.generateTestMessage();
   const testExecutionData: CommandExecutionData = {
     prefix: "!",
     rawMessage: testMessage,
