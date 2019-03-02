@@ -1,5 +1,4 @@
 import { MessageSender } from "@messenger/base/message-sender";
-import Author from "@model/base/author";
 import Message from "@model/base/message";
 import { Commands as AdminCommands } from "@store/commands/admin";
 import { Commands as BasicCommands } from "@store/commands/basic";

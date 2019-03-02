@@ -1,5 +1,5 @@
 import Author from "@model/base/author";
-import { EmojiCount, EmojiType } from "@model/base/emoji-count";
+import { EmojiCounter, EmojiType } from "@model/base/emoji-counter";
 import Message from "@model/base/message";
 import Server from "@model/base/server";
 import DiscordAuthorImpl from "@model/discord/discord-author-impl";
@@ -36,8 +36,8 @@ export default class DiscordMessageImpl implements Message {
     return this.discordMessage.guild === null;
   }
 
-  public get emojiCount(): Map<string, EmojiCount> {
-    const map = new Map<string, EmojiCount>();
+  public get emojiCount(): Map<string, EmojiCounter> {
+    const map = new Map<string, EmojiCounter>();
     if (!this.discordMessage.author.bot) {
       this.countStandardEmojisIntoMap(map);
       this.countCustomEmojisIntoMap(map);
@@ -50,23 +50,24 @@ export default class DiscordMessageImpl implements Message {
     return new DiscordServer(this.discordMessage.guild);
   }
 
-  private countCustomEmojisIntoMap(map: Map<string, EmojiCount>): void {
+  private countCustomEmojisIntoMap(map: Map<string, EmojiCounter>): void {
     const emojis = this.discordMessage.guild.emojis;
     const matches =
       this.discordMessage.content.match(DiscordMessageImpl.EMOJI_REGEX) || [];
     matches.forEach(emoji => {
       const discordEmoji = new DiscordCustomEmoji(emoji);
-      if (emojis.get(discordEmoji.id) !== null) {
+      const hasEmoji = emojis.some(e => e.id === discordEmoji.id);
+      if (hasEmoji) {
         const emojiCount =
           map.get(discordEmoji.id) ||
-          new EmojiCount(discordEmoji.id, EmojiType.CUSTOM);
+          new EmojiCounter(discordEmoji.id, EmojiType.CUSTOM);
         emojiCount.add(1);
         map.set(emojiCount.identifier, emojiCount);
       }
     });
   }
 
-  private countStandardEmojisIntoMap(map: Map<string, EmojiCount>): void {
+  private countStandardEmojisIntoMap(map: Map<string, EmojiCounter>): void {
     const message = this.discordMessage.content;
     const regex = emojiRegex();
     for (
@@ -75,18 +76,18 @@ export default class DiscordMessageImpl implements Message {
       result = regex.exec(message)
     ) {
       const emojiCount =
-        map.get(result[0]) || new EmojiCount(result[0], EmojiType.UNICODE);
+        map.get(result[0]) || new EmojiCounter(result[0], EmojiType.UNICODE);
       emojiCount.add(1);
       map.set(emojiCount.identifier, emojiCount);
     }
   }
 
-  private countReactionsIntoMap(map: Map<string, EmojiCount>): void {
+  private countReactionsIntoMap(map: Map<string, EmojiCounter>): void {
     this.discordMessage.reactions.forEach(reaction => {
-      function createNewEmojiCount(): EmojiCount {
+      function createNewEmojiCount(): EmojiCounter {
         return reaction.emoji.id !== null
-          ? new EmojiCount(reaction.emoji.id, EmojiType.CUSTOM)
-          : new EmojiCount(reaction.emoji.name, EmojiType.UNICODE);
+          ? new EmojiCounter(reaction.emoji.id, EmojiType.CUSTOM)
+          : new EmojiCounter(reaction.emoji.name, EmojiType.UNICODE);
       }
       const emojiCount = map.get(reaction.emoji.id) || createNewEmojiCount();
       emojiCount.add(reaction.count);

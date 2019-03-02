@@ -1,12 +1,12 @@
 import { MessageSender } from "@messenger/base/message-sender";
-import { EmojiCount, EmojiType } from "@model/base/emoji-count";
-import AbstractCommand from "@store/commands/abstract-command";
+import { EmojiCounter, EmojiType } from "@model/base/emoji-counter";
+import AdminCommand from "@store/commands/admin/admin-command";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
 
-export default class Stats extends AbstractCommand implements Command {
+export default class ServerStats extends AdminCommand implements Command {
   public getCommandName(): string {
-    return "stats";
+    return "server-stats";
   }
 
   public getCommandDescription(): string {
@@ -21,7 +21,7 @@ export default class Stats extends AbstractCommand implements Command {
     data: CommandExecutionData,
     messageSender: MessageSender
   ): Promise<void> {
-    const map = new Map<string, EmojiCount>();
+    const map = new Map<string, EmojiCounter>();
     await Promise.all(
       data.rawMessage.server.textChannels.map(async textChannel => {
         await textChannel.getAllMessages(message => {
@@ -36,6 +36,7 @@ export default class Stats extends AbstractCommand implements Command {
         });
       })
     );
+
     const title = ["***__Server Emoji Stats__***"];
     const emojiCountInfo = Array.from(map.values()).map(emojiCount => {
       if (emojiCount.type === EmojiType.CUSTOM) {

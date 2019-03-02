@@ -1,4 +1,4 @@
-export class EmojiCount {
+export class EmojiCounter {
   public readonly identifier: string;
   public readonly type: EmojiType;
   private occurrences = 0;

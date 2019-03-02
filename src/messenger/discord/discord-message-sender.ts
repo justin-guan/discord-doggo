@@ -24,6 +24,6 @@ export class DiscordMessageSender implements MessageSender {
     const formatted = this.message.client.emojis.find(
       emoji => emoji.id === emojiId
     );
-    return formatted !== undefined ? formatted.toString() : emojiId;
+    return formatted ? formatted.toString() : emojiId;
   }
 }

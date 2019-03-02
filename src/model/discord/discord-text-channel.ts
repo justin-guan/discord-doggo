@@ -1,16 +1,17 @@
 import Message from "@model/base/message";
 import TextChannel from "@model/base/text-channel";
+import DiscordMessageImpl from "@model/discord/discord-message-impl";
 import { TextChannel as DiscordTC } from "discord.js";
-import DiscordMessageImpl from "./discord-message-impl";
 
 export default class DiscordTextChannel implements TextChannel {
-  public get name(): string {
-    return this.textChannel.name;
-  }
   private textChannel: DiscordTC;
 
   constructor(textChannel: DiscordTC) {
     this.textChannel = textChannel;
+  }
+
+  public get name(): string {
+    return this.textChannel.name;
   }
 
   public async getAllMessages(

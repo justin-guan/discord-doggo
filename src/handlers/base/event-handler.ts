@@ -2,7 +2,7 @@ import VoiceSynthesizer from "@handlers/base/voice-synthesizer";
 import logger from "@logger";
 import { MessageSender } from "@messenger/base/message-sender";
 import Client from "@model/base/client";
-import { EmojiCount } from "@model/base/emoji-count";
+import { EmojiCounter } from "@model/base/emoji-counter";
 import Member from "@model/base/member";
 import Message from "@model/base/message";
 import CommandExecutionDataImpl from "@store/commands/command-execution-data-impl";
