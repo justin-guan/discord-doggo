@@ -42,7 +42,8 @@ class TestDataGenerator {
       isDirectMessage:
         partial.isDirectMessage || TestDataGenerator.testMessageIsDM,
       emojiCount: partial.emojiCount || TestDataGenerator.testMessageEmojiCount,
-      server: partial.server || this.generateTestServer()
+      server: partial.server || this.generateTestServer(),
+      delete: partial.delete || jest.fn()
     };
   }
 

@@ -9,4 +9,6 @@ export default interface Message {
   readonly isDirectMessage: boolean;
   readonly emojiCount: Map<string, EmojiCounter>;
   readonly server: Server;
+
+  delete(): Promise<void>;
 }

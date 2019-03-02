@@ -50,6 +50,10 @@ export default class DiscordMessageImpl implements Message {
     return new DiscordServer(this.discordMessage.guild);
   }
 
+  public async delete(): Promise<void> {
+    await this.discordMessage.delete();
+  }
+
   private countCustomEmojisIntoMap(map: Map<string, EmojiCounter>): void {
     const emojis = this.discordMessage.guild.emojis;
     const matches =
