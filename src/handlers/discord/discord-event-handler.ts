@@ -6,8 +6,7 @@ import DiscordMessageImpl from "@model/discord/discord-message-impl";
 import {
   Client as DiscordClient,
   GuildMember,
-  Message as DiscordMessage,
-  TextChannel
+  Message as DiscordMessage
 } from "discord.js";
 
 export default class DiscordEventHandler {
