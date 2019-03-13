@@ -59,16 +59,32 @@ export default class EventHandler {
   ): Promise<void> {
     const oldVoiceId = oldMember.voiceChannelId;
     const newVoiceId = newMember.voiceChannelId;
+    const save = this.checkIfBotVoiceStateUpdate(newMember.id);
     if (newMember.id === this.client.id || oldVoiceId === newVoiceId) {
+      await save;
       return;
     }
+    const promises = [save];
     const name = newMember.getDisplayName();
     if (this.client.isInVoiceChannel(newVoiceId)) {
       logger.info(`${name} (${newMember.id}) joined channel ${newVoiceId}`);
-      await this.sayJoin(newVoiceId, newMember.getDisplayName());
+      const say = this.sayJoin(newVoiceId, newMember.getDisplayName());
+      promises.push(say);
     } else if (this.client.isInVoiceChannel(oldVoiceId)) {
       logger.info(`${name} (${newMember.id}) left channel ${oldVoiceId}`);
-      await this.sayLeave(oldVoiceId, newMember.getDisplayName());
+      const say = this.sayLeave(oldVoiceId, newMember.getDisplayName());
+      promises.push(say);
+    }
+    await Promise.all(promises);
+  }
+
+  private async checkIfBotVoiceStateUpdate(
+    voiceStateUpdateMemberId: string
+  ): Promise<void> {
+    if (voiceStateUpdateMemberId === this.client.id) {
+      await this.store.saveConnections(
+        this.client.getConnectedVoiceChannelIds()
+      );
     }
   }
 
