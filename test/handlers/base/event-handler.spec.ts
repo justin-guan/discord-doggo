@@ -173,6 +173,7 @@ describe("Event Handler", () => {
       });
       mockGetCommand.mockImplementation(() => {
         return {
+          getCommandName: () => "",
           execute: mockCommandExecute
         };
       });
