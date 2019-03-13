@@ -46,6 +46,8 @@ export default class EventHandler {
     const commandName = data.commandName;
     const command = await this.store.getCommand(message.server.id, commandName);
     if (command) {
+      const authorName = message.author.name;
+      logger.info(`${authorName} invoked command ${command.getCommandName()}`);
       await message.delete();
       await command.execute(data, sender);
     }
@@ -60,9 +62,12 @@ export default class EventHandler {
     if (newMember.id === this.client.id || oldVoiceId === newVoiceId) {
       return;
     }
+    const name = newMember.getDisplayName();
     if (this.client.isInVoiceChannel(newVoiceId)) {
+      logger.info(`${name} (${newMember.id}) joined channel ${newVoiceId}`);
       await this.sayJoin(newVoiceId, newMember.getDisplayName());
     } else if (this.client.isInVoiceChannel(oldVoiceId)) {
+      logger.info(`${name} (${newMember.id}) left channel ${oldVoiceId}`);
       await this.sayLeave(oldVoiceId, newMember.getDisplayName());
     }
   }
@@ -92,6 +97,7 @@ export default class EventHandler {
         `${username} ${text}`,
         absPath
       );
+      logger.info(`Synthesized voice file at ${synthPath}`);
       await this.client.playFile(voiceChannelId, synthPath);
     } catch (error) {
       logger.error("Failed to synthesize voice");
