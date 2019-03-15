@@ -44,6 +44,8 @@ export default class DiscordClientImpl implements Client {
       logger.info(`Before play file Paused time: ${getPausedTime()}`);
       await connection.playFile(file);
       logger.info(`After play file Paused time: ${getPausedTime()}`);
+      // tslint:disable-next-line:no-any
+      (connection.player as any).streamingData.pausedTime = 0;
     } else {
       return Promise.reject("Client is not connected to the voice channel");
     }
