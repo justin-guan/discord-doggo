@@ -1,3 +1,4 @@
+import logger = require("@logger");
 import Client from "@model/base/client";
 import { Client as DiscordClient, TextChannel, VoiceChannel } from "discord.js";
 
@@ -36,7 +37,13 @@ export default class DiscordClientImpl implements Client {
       vc => vc.channel.id === voiceChannelId
     );
     if (connection) {
+      function getPausedTime(): number {
+        // tslint:disable-next-line:no-any
+        return (connection.player as any).streamingData.pausedTime;
+      }
+      logger.info(`Before play file Paused time: ${getPausedTime()}`);
       await connection.playFile(file);
+      logger.info(`After play file Paused time: ${getPausedTime()}`);
     } else {
       return Promise.reject("Client is not connected to the voice channel");
     }
