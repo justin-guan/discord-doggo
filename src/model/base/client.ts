@@ -4,5 +4,5 @@ export default interface Client {
   isInVoiceChannel(channelId: string): boolean;
   getConnectedVoiceChannelIds(): string[];
   joinVoiceChannel(voiceChannelId: string): Promise<void>;
-  playFile(voiceChannelId: string, file: string): Promise<void>;
+  play(voiceChannelId: string, url: string): Promise<void>;
 }

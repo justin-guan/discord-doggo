@@ -16,6 +16,10 @@ export class DiscordMessageSender implements MessageSender {
     await this.message.channel.send(splitMessage, { split: true });
   }
 
+  public async sendDM(message: string): Promise<void> {
+    await this.message.author.send(message);
+  }
+
   public async replyMessage(message: string): Promise<void> {
     await this.message.reply(message);
   }

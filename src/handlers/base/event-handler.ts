@@ -43,7 +43,12 @@ export default class EventHandler {
     if (!message.message.startsWith(prefix)) {
       return;
     }
-    const data = new CommandExecutionDataImpl(prefix, message, this.store);
+    const data = new CommandExecutionDataImpl(
+      prefix,
+      message,
+      this.store,
+      this.client
+    );
     const commandName = data.commandName;
     const command = await this.store.getCommand(message.server.id, commandName);
     if (command) {
@@ -115,7 +120,7 @@ export default class EventHandler {
         absPath
       );
       logger.info(`Synthesized voice file at ${synthPath}`);
-      await this.client.playFile(voiceChannelId, synthPath);
+      await this.client.play(voiceChannelId, synthPath);
     } catch (error) {
       logger.error("Failed to synthesize voice");
     }
