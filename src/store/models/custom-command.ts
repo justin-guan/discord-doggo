@@ -7,6 +7,6 @@ export interface CustomCommand {
 }
 
 export class CustomCommandType {
-  public static VOICE = 0;
-  public static TEXT = 1;
+  public static VOICE = 1;
+  public static TEXT = 2;
 }

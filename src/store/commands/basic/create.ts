@@ -28,6 +28,7 @@ export default class Create extends AbstractCommand {
     let name: string;
     let description: string;
     let type: number;
+    let action: string;
     await messageSender.sendDM("Please enter a name for your command");
     data.rawMessage.author.collectMessages(async (message, collector) => {
       switch (step) {
@@ -40,10 +41,14 @@ export default class Create extends AbstractCommand {
             );
             name = nameCollection[0];
             step = nameCollection[1];
-            await messageSender.sendDM("What type of command is it? 1 or 2");
+            await messageSender.sendDM(
+              `What type of command is it?\n${
+                CustomCommandType.VOICE
+              }. Voice\n${CustomCommandType.TEXT}. Text `
+            );
           } catch (e) {
             await messageSender.sendDM(
-              "This command name already exists. Please enter a new one"
+              "This command name cannot be used. A command with this name must not exist, and the command name must be alphanumeric. Please try again."
             );
           }
           break;
@@ -73,16 +78,46 @@ export default class Create extends AbstractCommand {
             );
           }
           break;
-        case Step.ACTION: // TODO: Collect the action
-          const actionCollection = await this.collectAction(message);
-          if (actionCollection[1] === Step.DONE) {
+        case Step.ACTION:
+          try {
+            const actionCollection = await this.collectAction(message, type);
+            action = actionCollection[0];
+            step = actionCollection[1];
+            if (step === Step.CANCEL) {
+              collector.destroy();
+              await messageSender.sendDM("Cancelled custom command creation!");
+              return;
+            }
+            await messageSender.sendDM("Create command? <Y/N>");
+          } catch (e) {
+            await messageSender.sendDM("Invalid action, please try again");
+          }
+          break;
+        case Step.CONFIRM:
+          try {
+            const confirmation = await this.collectConfirmation(message);
+            if (confirmation === CONFIRMATION.YES) {
+              try {
+                await this.createCustomCommand(
+                  data.store,
+                  server.id,
+                  name,
+                  description,
+                  type,
+                  action
+                );
+                await messageSender.sendDM("Command created!");
+              } catch (e) {
+                await messageSender.sendDM(
+                  "Something seems to have gone wrong while creating this command. Please try again at another time."
+                );
+              }
+            } else {
+              await messageSender.sendDM("Command creation cancelled");
+            }
             collector.destroy();
-            this.createCustomCommand(
-              name,
-              description,
-              type,
-              actionCollection[0]
-            );
+          } catch (e) {
+            await messageSender.sendDM("Please enter Y or N");
           }
           break;
         default:
@@ -118,8 +153,45 @@ export default class Create extends AbstractCommand {
     return Promise.reject();
   }
 
-  private async collectAction(message: Message): Promise<[string, Step]> {
-    return [message.message, Step.DONE];
+  private async collectAction(
+    message: Message,
+    type: number
+  ): Promise<[string, Step]> {
+    if (type === CustomCommandType.VOICE) {
+      return this.collectVoiceAction(message);
+    }
+    return this.collectTextAction(message);
+  }
+
+  private async collectConfirmation(message: Message): Promise<CONFIRMATION> {
+    const lowercase = message.message.toLowerCase();
+    if (lowercase === CONFIRMATION.YES) {
+      return Promise.resolve(CONFIRMATION.YES);
+    } else if (lowercase === CONFIRMATION.NO) {
+      return Promise.resolve(CONFIRMATION.NO);
+    }
+    return Promise.reject();
+  }
+
+  private collectVoiceAction(message: Message): Promise<[string, Step]> {
+    if (message.message.toLowerCase() === "cancel") {
+      const cancel: [string, Step] = ["", Step.CANCEL];
+      return Promise.resolve(cancel);
+    }
+    const attachment = message.attachments[0];
+    if (!attachment) {
+      return Promise.reject();
+    }
+    const result: [string, Step] = [attachment.url, Step.CONFIRM];
+    return Promise.resolve(result);
+  }
+
+  private collectTextAction(message: Message): Promise<[string, Step]> {
+    if (!message.message) {
+      return Promise.reject();
+    }
+    const result: [string, Step] = [message.message, Step.CONFIRM];
+    return Promise.resolve(result);
   }
 
   private async isValidCommandName(
@@ -128,12 +200,17 @@ export default class Create extends AbstractCommand {
     serverId: string
   ): Promise<boolean> {
     const isNotEmpty = this.isNotEmpty(name);
+    const isAlphaNumeric = this.isAlphaNumeric(name);
     const isNew = (await store.getCommand(serverId, name)) === undefined;
-    return isNotEmpty && isNew;
+    return isNotEmpty && isAlphaNumeric && isNew;
   }
 
   private isNotEmpty(s: string): boolean {
     return s !== undefined && s.replace(/ /g, "") !== "";
+  }
+
+  private isAlphaNumeric(s: string): boolean {
+    return /^[a-z0-9]+$/i.test(s);
   }
 
   private async promptForAction(
@@ -142,7 +219,7 @@ export default class Create extends AbstractCommand {
   ): Promise<void> {
     if (type === CustomCommandType.VOICE) {
       await messageSender.sendDM(
-        "Please send me the audio you want to use\n Try dragging and dropping the audio file into Discord"
+        'Please send me the audio you want to use\nTry dragging and dropping the audio file into Discord\nYou can also type "cancel" to cancel creating this command'
       );
     } else if (type === CustomCommandType.TEXT) {
       await messageSender.sendDM("What should this text command say?");
@@ -150,6 +227,8 @@ export default class Create extends AbstractCommand {
   }
 
   private createCustomCommand(
+    store: Store,
+    serverId: string,
     name: string,
     description: string,
     type: number,
@@ -162,7 +241,7 @@ export default class Create extends AbstractCommand {
       action,
       cost: 0
     };
-    return Promise.resolve();
+    return store.addCustomCommand(serverId, customCommand);
   }
 }
 
@@ -171,5 +250,12 @@ enum Step {
   TYPE,
   DESCRIPTION,
   ACTION,
-  DONE
+  CONFIRM,
+  DONE,
+  CANCEL
+}
+
+enum CONFIRMATION {
+  YES = "y",
+  NO = "n"
 }
