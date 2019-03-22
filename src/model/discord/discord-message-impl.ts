@@ -3,12 +3,12 @@ import Author from "@model/base/author";
 import { EmojiCounter, EmojiType } from "@model/base/emoji-counter";
 import Message from "@model/base/message";
 import Server from "@model/base/server";
+import DiscordAttachment from "@model/discord/discord-attachment";
 import DiscordAuthorImpl from "@model/discord/discord-author-impl";
 import DiscordCustomEmoji from "@model/discord/discord-custom-emoji";
 import DiscordServer from "@model/discord/discord-server";
 import { Message as DiscordMessage } from "discord.js";
 import emojiRegex from "emoji-regex";
-import DiscordAttachment from "./discord-attachment";
 
 export default class DiscordMessageImpl implements Message {
   private static EMOJI_REGEX = /<:.*?(?=:):[0-9]*>/gm;

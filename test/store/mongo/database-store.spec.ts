@@ -34,6 +34,7 @@ jest.mock(
 import ClientVoiceConnectionsConfig from "@store/models/client-voice-connections-config";
 import Guild from "@store/models/guild";
 import DatabaseStore from "@store/mongo/database-store";
+import testDataGenerator from "../../utils/test-data-generator";
 
 describe("Database Store", () => {
   let databaseStore: DatabaseStore;
@@ -276,13 +277,9 @@ describe("Database Store", () => {
   }
 
   function createGuildMock(id: string): Guild {
-    const guild: Guild = {
-      getId: () => id,
-      getCommandPrefix: () => "",
-      setCommandPrefix: () => undefined,
-      save: () => Promise.resolve(guild)
-    };
-    return guild;
+    return testDataGenerator.generateTestGuild({
+      getId: () => id
+    });
   }
 
   function createVoiceConnectionConfigMock(

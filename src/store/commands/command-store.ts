@@ -1,14 +1,14 @@
+import { Database } from "@store/base/database";
 import { Commands as AdminCommands } from "@store/commands/admin";
 import { Commands as BasicCommands } from "@store/commands/basic";
 import Command from "@store/commands/command";
-import DatabaseStore from "@store/mongo/database-store";
 import ExecutableCustomCommand from "./executable-custom-command";
 
 export default class CommandStore {
-  private databaseStore: DatabaseStore;
+  private databaseStore: Database;
   private commands: Map<string, Command> = new Map();
 
-  constructor(databaseStore: DatabaseStore) {
+  constructor(databaseStore: Database) {
     this.databaseStore = databaseStore;
     this.setCommands(BasicCommands);
     this.setCommands(AdminCommands);

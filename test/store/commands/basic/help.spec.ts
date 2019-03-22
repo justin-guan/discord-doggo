@@ -1,4 +1,5 @@
 import { MessageSender } from "@messenger/base/message-sender";
+import Client from "@model/base/client";
 import Message from "@model/base/message";
 import Help from "@store/commands/basic/help";
 import Command from "@store/commands/command";
@@ -49,6 +50,7 @@ describe("Help Command", () => {
     prefix: "!",
     rawMessage: testMessage,
     store: TypeMoq.Mock.ofType<Store>().object,
+    client: TypeMoq.Mock.ofType<Client>().object,
     arguments: []
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();
@@ -109,6 +111,7 @@ describe("Help Command", () => {
       prefix: "!",
       rawMessage: testMessage,
       store: TypeMoq.Mock.ofType<Store>().object,
+      client: TypeMoq.Mock.ofType<Client>().object,
       arguments: ["invalid"]
     };
 

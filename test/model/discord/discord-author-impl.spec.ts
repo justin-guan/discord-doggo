@@ -1,3 +1,9 @@
+jest.mock("discord.js", () => {
+  return {
+    MessageAttachment: {}
+  };
+});
+
 import DiscordAuthorImpl from "@model/discord/discord-author-impl";
 import { Message, User } from "discord.js";
 import * as TypeMoq from "typemoq";

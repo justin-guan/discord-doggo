@@ -29,6 +29,7 @@ import Member from "@model/base/member";
 import Message from "@model/base/message";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
+import testDataGenerator from "../../utils/test-data-generator";
 
 const TEST_STORE_URI = "test store uri";
 const TEST_CLIENT_ID = "test client id";
@@ -285,15 +286,13 @@ describe("Event Handler", () => {
 
     function setUpMockMessage(isBot: boolean): TypeMoq.IMock<Message> {
       const mock = TypeMoq.Mock.ofType<Message>();
-      mock.setup(m => m.author).returns(() => {
-        return {
+      mock.setup(m => m.author).returns(() =>
+        testDataGenerator.generateTestAuthor({
           isBot,
-          name: "",
-          joinCurrentVoiceChannel: () => Promise.resolve(),
-          leaveCurrentVoiceChannel: () => Promise.resolve(),
-          isAdmin: () => false
-        };
-      });
+          joinCurrentVoiceChannel: () => Promise.resolve(""),
+          leaveCurrentVoiceChannel: () => Promise.resolve()
+        })
+      );
       mock.setup(m => m.message).returns(() => {
         return testMessage;
       });
@@ -324,7 +323,7 @@ describe("Event Handler", () => {
 
       await expect(result).resolves.toBeUndefined();
       mockClient.verify(
-        c => c.playFile(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+        c => c.play(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
         TypeMoq.Times.never()
       );
     });
@@ -338,7 +337,7 @@ describe("Event Handler", () => {
 
       await expect(result).resolves.toBeUndefined();
       mockClient.verify(
-        c => c.playFile(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+        c => c.play(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
         TypeMoq.Times.never()
       );
     });
@@ -352,10 +351,7 @@ describe("Event Handler", () => {
       const result = eventHandler.onVoiceStateUpdate(oldMember, newMember);
 
       await expect(result).resolves.toBeUndefined();
-      mockClient.verify(
-        c => c.playFile(voiceId2, synthPath),
-        TypeMoq.Times.once()
-      );
+      mockClient.verify(c => c.play(voiceId2, synthPath), TypeMoq.Times.once());
     });
 
     test("should announce leave", async () => {
@@ -367,10 +363,7 @@ describe("Event Handler", () => {
       const result = eventHandler.onVoiceStateUpdate(oldMember, newMember);
 
       await expect(result).resolves.toBeUndefined();
-      mockClient.verify(
-        c => c.playFile(voiceId1, synthPath),
-        TypeMoq.Times.once()
-      );
+      mockClient.verify(c => c.play(voiceId1, synthPath), TypeMoq.Times.once());
     });
 
     test("should not announce because bot not in channel changes", async () => {
@@ -384,7 +377,7 @@ describe("Event Handler", () => {
 
       await expect(result).resolves.toBeUndefined();
       mockClient.verify(
-        c => c.playFile(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+        c => c.play(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
         TypeMoq.Times.never()
       );
     });
@@ -399,7 +392,7 @@ describe("Event Handler", () => {
 
       await expect(result).resolves.toBeUndefined();
       mockClient.verify(
-        c => c.playFile(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
+        c => c.play(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
         TypeMoq.Times.never()
       );
       await expect(mockErrorLog).toBeCalledTimes(1);
