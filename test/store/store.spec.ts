@@ -5,8 +5,6 @@ const mockDatabaseClose = jest.fn();
 const mockGetGuild = jest.fn();
 const mockGetPreviousConnections = jest.fn();
 const mockSaveConnections = jest.fn();
-const mockAddCustomCommand = jest.fn();
-const mockRemoveCustomCommand = jest.fn();
 jest.mock("@store/mongo/database-store", () => {
   return class {
     public connect = mockDatabaseInitialize;
