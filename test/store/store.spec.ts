@@ -5,6 +5,8 @@ const mockDatabaseClose = jest.fn();
 const mockGetGuild = jest.fn();
 const mockGetPreviousConnections = jest.fn();
 const mockSaveConnections = jest.fn();
+const mockAddCustomCommand = jest.fn();
+const mockRemoveCustomCommand = jest.fn();
 jest.mock("@store/mongo/database-store", () => {
   return class {
     public connect = mockDatabaseInitialize;
@@ -25,6 +27,7 @@ import Command from "@store/commands/command";
 import Guild from "@store/models/guild";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
+import testDataGenerator from "../utils/test-data-generator";
 
 describe("Store", () => {
   let store: Store;
@@ -233,6 +236,37 @@ describe("Store", () => {
     const result = store.saveConnections([]);
 
     await expect(result).rejects.toBeUndefined();
+  });
+
+  test("should add a new custom command", async () => {
+    const customCommand = testDataGenerator.generateCustomCommand();
+    const result = store.addCustomCommand(testServerId, customCommand);
+
+    await expect(result).resolves.toBeUndefined();
+    mockGuild.verify(
+      g => g.addNewCustomCommand(customCommand),
+      TypeMoq.Times.once()
+    );
+  });
+
+  test("should fail to add a new custom command", async () => {
+    const testError = new Error();
+    mockGuild
+      .setup(g => g.addNewCustomCommand(TypeMoq.It.isAny()))
+      .throws(testError);
+    const customCommand = testDataGenerator.generateCustomCommand();
+    const result = store.addCustomCommand(testServerId, customCommand);
+
+    await expect(result).rejects.toBe(testError);
+  });
+
+  test("should remove a custom command", async () => {
+    const customCommand = testDataGenerator.generateCustomCommand();
+    await store.addCustomCommand(testServerId, customCommand);
+
+    const result = store.removeCustomCommand(testServerId, customCommand.name);
+
+    await expect(result).resolves.toBeUndefined();
   });
 
   function setupMockGuild(): void {

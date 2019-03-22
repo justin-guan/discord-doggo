@@ -45,9 +45,13 @@ export default class Store {
     serverId: string,
     customCommand: CustomCommand
   ): Promise<void> {
-    const guild = await this.databaseStore.getGuild(serverId);
-    guild.addNewCustomCommand(customCommand);
-    await guild.save();
+    try {
+      const guild = await this.databaseStore.getGuild(serverId);
+      guild.addNewCustomCommand(customCommand);
+      await guild.save();
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 
   public async removeCustomCommand(
