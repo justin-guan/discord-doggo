@@ -1,5 +1,6 @@
 import { CustomCommand, CustomCommandType } from "@store/models/custom-command";
 import { Guild } from "@store/mongo/database-models/guild";
+import testDataGenerator from "../../../utils/test-data-generator";
 
 describe("Mongoose Guild Schema", () => {
   const testGuildId = "test id";
@@ -295,12 +296,8 @@ describe("Mongoose Guild Schema", () => {
   });
 
   function generateTestCustomCommand(commandName: string): CustomCommand {
-    return {
-      name: commandName,
-      description: "",
-      type: CustomCommandType.VOICE,
-      action: "",
-      cost: 0
-    };
+    return testDataGenerator.generateCustomCommand({
+      name: commandName
+    });
   }
 });

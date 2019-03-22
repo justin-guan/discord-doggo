@@ -1,6 +1,7 @@
 import Author from "@model/base/author";
 import Message from "@model/base/message";
 import Server from "@model/base/server";
+import { CustomCommand } from "@store/models/custom-command";
 import {
   Collection,
   Emoji,

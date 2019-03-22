@@ -4,6 +4,7 @@ import Message from "@model/base/message";
 import Server from "@model/base/server";
 import TextChannel from "@model/base/text-channel";
 import { Database } from "@store/base/database";
+import { CustomCommand, CustomCommandType } from "@store/models/custom-command";
 import Guild from "@store/models/guild";
 
 class TestDataGenerator {
@@ -19,6 +20,8 @@ class TestDataGenerator {
   public static testServerTextChannels = [];
   public static testTextChannelName = "text channel name";
   public static testCommandPrefix = "!";
+  public static testCustomCommandName = "test";
+  public static testCustomCommandDescription = "description";
 
   public generateTestAuthor(partial: Partial<Author> = {}): Author {
     return {
@@ -82,6 +85,19 @@ class TestDataGenerator {
       addNewCustomCommand: partial.addNewCustomCommand || jest.fn(),
       removeCustomCommand: partial.removeCustomCommand || jest.fn(),
       getCustomCommand: partial.getCustomCommand || (() => undefined)
+    };
+  }
+
+  public generateCustomCommand(
+    partial: Partial<CustomCommand> = {}
+  ): CustomCommand {
+    return {
+      name: partial.name || TestDataGenerator.testCustomCommandName,
+      description:
+        partial.description || TestDataGenerator.testCustomCommandDescription,
+      type: partial.type || CustomCommandType.VOICE,
+      action: partial.action || "",
+      cost: partial.cost || 0
     };
   }
 }
