@@ -1,10 +1,11 @@
 import Command from "@store/commands/command";
 import CommandStore from "@store/commands/command-store";
+import { CustomCommand } from "@store/models/custom-command";
 import DatabaseStore from "@store/mongo/database-store";
 
 export default class Store {
   private databaseStore = new DatabaseStore();
-  private commandStore = new CommandStore();
+  private commandStore = new CommandStore(this.databaseStore);
 
   public async initialize(uri: string): Promise<void> {
     await this.databaseStore.connect(uri);
@@ -28,7 +29,7 @@ export default class Store {
   public getCommand(
     serverId: string,
     commandName: string
-  ): Command | undefined {
+  ): Promise<Command | undefined> {
     return this.commandStore.getCommand(serverId, commandName);
   }
 
@@ -38,6 +39,28 @@ export default class Store {
 
   public async saveConnections(voiceChannelIds: string[]): Promise<void> {
     await this.databaseStore.saveConnections(voiceChannelIds);
+  }
+
+  public async addCustomCommand(
+    serverId: string,
+    customCommand: CustomCommand
+  ): Promise<void> {
+    try {
+      const guild = await this.databaseStore.getGuild(serverId);
+      guild.addNewCustomCommand(customCommand);
+      await guild.save();
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  public async removeCustomCommand(
+    serverId: string,
+    commandName: string
+  ): Promise<void> {
+    const guild = await this.databaseStore.getGuild(serverId);
+    guild.removeCustomCommand(commandName);
+    await guild.save();
   }
 }
 

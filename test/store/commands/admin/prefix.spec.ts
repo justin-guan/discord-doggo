@@ -1,4 +1,5 @@
 import { MessageSender } from "@messenger/base/message-sender";
+import Client from "@model/base/client";
 import Message from "@model/base/message";
 import Prefix from "@store/commands/admin/prefix";
 import CommandExecutionData from "@store/commands/command-execution-data";
@@ -19,6 +20,7 @@ describe("Prefix Command", () => {
     prefix: "!",
     rawMessage: testMessage,
     store: mockStore.object,
+    client: TypeMoq.Mock.ofType<Client>().object,
     arguments: ["?"]
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();

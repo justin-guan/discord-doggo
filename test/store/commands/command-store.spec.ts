@@ -1,16 +1,20 @@
 import { MessageSender } from "@messenger/base/message-sender";
+import Client from "@model/base/client";
 import Message from "@model/base/message";
 import { Commands as AdminCommands } from "@store/commands/admin";
 import { Commands as BasicCommands } from "@store/commands/basic";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
 import CommandStore from "@store/commands/command-store";
+import Guild from "@store/models/guild";
+import DatabaseStore from "@store/mongo/database-store";
 import Store from "@store/store";
 import * as TypeMoq from "typemoq";
 import testDataGenerator from "../../utils/test-data-generator";
 
 describe("Command Store", () => {
-  const commandStore = new CommandStore();
+  const databaseMock = testDataGenerator.generateTestDatabase();
+  const commandStore = new CommandStore(databaseMock);
   const testServerId = "test server id";
   const badCommandName = "NOT A COMMAND";
   const empty = "";
@@ -18,8 +22,8 @@ describe("Command Store", () => {
 
   test.each(allCommands.map(command => command.getCommandName()))(
     "should find the %s command",
-    (commandName: string) => {
-      const command = commandStore.getCommand(testServerId, commandName);
+    async (commandName: string) => {
+      const command = await commandStore.getCommand(testServerId, commandName);
 
       expect(command).not.toBeUndefined();
       const c = command as Command;
@@ -27,8 +31,12 @@ describe("Command Store", () => {
     }
   );
 
-  test("should fail to find command", () => {
-    const command = commandStore.getCommand(testServerId, badCommandName);
+  test("should fail to find command", async () => {
+    const testDatabase = testDataGenerator.generateTestDatabase({
+      getGuild: () => Promise.resolve(testDataGenerator.generateTestGuild())
+    });
+    const cmdStore = new CommandStore(testDatabase);
+    const command = await cmdStore.getCommand(testServerId, badCommandName);
 
     expect(command).toBeUndefined();
   });
@@ -48,11 +56,13 @@ describe("Command Store", () => {
         prefix: "!",
         rawMessage: testMessage,
         store: TypeMoq.Mock.ofType<Store>().object,
+        client: TypeMoq.Mock.ofType<Client>().object,
         arguments: createFakeArguments(command.getExpectedNumberArguments() + 1)
       };
       const mockMessageSender: MessageSender = {
         sendMessage: jest.fn(),
         sendSplitMessage: jest.fn(),
+        sendDM: jest.fn(),
         replyMessage: jest.fn(),
         getFormattedCustomEmoji: jest.fn()
       };
@@ -75,11 +85,13 @@ describe("Command Store", () => {
         prefix: "!",
         rawMessage: testMessage,
         store: TypeMoq.Mock.ofType<Store>().object,
+        client: TypeMoq.Mock.ofType<Client>().object,
         arguments: createFakeArguments(command.getExpectedNumberArguments())
       };
       const mockMessageSender: MessageSender = {
         sendMessage: jest.fn(),
         sendSplitMessage: jest.fn(),
+        sendDM: jest.fn(),
         replyMessage: jest.fn(),
         getFormattedCustomEmoji: jest.fn()
       };

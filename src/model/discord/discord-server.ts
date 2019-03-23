@@ -14,6 +14,10 @@ export default class DiscordServer implements Server {
     return this.guild.id;
   }
 
+  public get name(): string {
+    return this.guild.name;
+  }
+
   public get textChannels(): TextChannel[] {
     return this.guild.channels
       .filter(c => c instanceof DiscordTC)

@@ -1,3 +1,4 @@
+import Attachment from "@model/base/attachment";
 import Author from "@model/base/author";
 import { EmojiCounter } from "@model/base/emoji-counter";
 import Server from "@model/base/server";
@@ -9,6 +10,7 @@ export default interface Message {
   readonly isDirectMessage: boolean;
   readonly emojiCount: Map<string, EmojiCounter>;
   readonly server: Server;
+  readonly attachments: Attachment[];
 
   delete(): Promise<void>;
 }

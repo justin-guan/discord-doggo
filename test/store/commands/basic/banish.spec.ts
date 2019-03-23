@@ -1,4 +1,5 @@
 import { MessageSender } from "@messenger/base/message-sender";
+import Client from "@model/base/client";
 import Message from "@model/base/message";
 import Banish from "@store/commands/basic/banish";
 import CommandExecutionData from "@store/commands/command-execution-data";
@@ -20,6 +21,7 @@ describe("Banish Command", () => {
     prefix: "!",
     rawMessage: testMessage,
     store: TypeMoq.Mock.ofType<Store>().object,
+    client: TypeMoq.Mock.ofType<Client>().object,
     arguments: []
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();

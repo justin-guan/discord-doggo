@@ -1,4 +1,5 @@
 import { MessageSender } from "@messenger/base/message-sender";
+import Client from "@model/base/client";
 import ServerStats from "@store/commands/admin/server-stats";
 import CommandExecutionData from "@store/commands/command-execution-data";
 import Store from "@store/store";
@@ -25,6 +26,7 @@ describe("Server Stats Command", () => {
     prefix: "!",
     rawMessage: testMessage,
     store: TypeMoq.Mock.ofType<Store>().object,
+    client: TypeMoq.Mock.ofType<Client>().object,
     arguments: []
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();

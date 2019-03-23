@@ -1,11 +1,15 @@
+import { CustomCommand, CustomCommandType } from "@store/models/custom-command";
 import Guild from "@store/models/guild";
 import { model, Document, Model, Schema } from "mongoose";
 
 interface GuildDocument extends Document {
   _id: string;
   commandPrefix: string;
+  commands: CustomCommand[];
 
   changeCommandPrefix(newPrefix: string): void;
+  addNewCommand(command: CustomCommand): void;
+  removeCommand(commandName: string): void;
 }
 
 interface GuildModel extends Model<GuildDocument> {
@@ -21,7 +25,33 @@ const schema = new Schema({
   commandPrefix: {
     type: String,
     default: "!"
-  }
+  },
+  commands: [
+    {
+      name: {
+        type: String,
+        required: true
+      },
+      description: {
+        type: String,
+        required: true
+      },
+      type: {
+        type: Number,
+        enum: [CustomCommandType.VOICE, CustomCommandType.TEXT],
+        required: true
+      },
+      action: {
+        type: String,
+        required: true
+      },
+      cost: {
+        type: Number,
+        default: 0,
+        required: true
+      }
+    }
+  ]
 });
 
 // methods
@@ -29,6 +59,28 @@ schema.methods.changeCommandPrefix = function changeCommandPrefix(
   newPrefix: string
 ): void {
   this.commandPrefix = newPrefix;
+};
+
+schema.methods.addNewCommand = function addNewCommand(
+  customCommand: CustomCommand
+): void {
+  const filter: CustomCommand[] = this.commands.filter(
+    (command: CustomCommand) => command.name === customCommand.name
+  );
+  if (filter.length > 0) {
+    throw new Error(
+      `Tried adding an already existing command: ${customCommand.name}`
+    );
+  }
+  this.commands.push(customCommand);
+};
+
+schema.methods.removeCommand = function removeCommand(
+  commandName: string
+): void {
+  this.commands = this.commands.filter(
+    (command: CustomCommand) => command.name !== commandName
+  );
 };
 
 // statics
@@ -74,6 +126,20 @@ class StoreGuild implements Guild {
   public async save(): Promise<Guild> {
     await this.guild.save();
     return this;
+  }
+
+  public addNewCustomCommand(command: CustomCommand): void {
+    this.guild.addNewCommand(command);
+  }
+
+  public removeCustomCommand(commandName: string): void {
+    this.guild.removeCommand(commandName);
+  }
+
+  public getCustomCommand(commandName: string): CustomCommand | undefined {
+    return this.guild.commands.find(
+      customCommand => customCommand.name === commandName
+    );
   }
 }
 

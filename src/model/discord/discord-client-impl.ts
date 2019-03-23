@@ -31,12 +31,12 @@ export default class DiscordClientImpl implements Client {
     }
   }
 
-  public async playFile(voiceChannelId: string, file: string): Promise<void> {
+  public async play(voiceChannelId: string, url: string): Promise<void> {
     const connection = this.client.voiceConnections.find(
       vc => vc.channel.id === voiceChannelId
     );
     if (connection) {
-      await connection.playFile(file);
+      await connection.playArbitraryInput(url);
     } else {
       return Promise.reject("Client is not connected to the voice channel");
     }

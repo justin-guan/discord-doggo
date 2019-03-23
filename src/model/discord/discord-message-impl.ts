@@ -1,7 +1,9 @@
+import Attachment from "@model/base/attachment";
 import Author from "@model/base/author";
 import { EmojiCounter, EmojiType } from "@model/base/emoji-counter";
 import Message from "@model/base/message";
 import Server from "@model/base/server";
+import DiscordAttachment from "@model/discord/discord-attachment";
 import DiscordAuthorImpl from "@model/discord/discord-author-impl";
 import DiscordCustomEmoji from "@model/discord/discord-custom-emoji";
 import DiscordServer from "@model/discord/discord-server";
@@ -48,6 +50,12 @@ export default class DiscordMessageImpl implements Message {
 
   public get server(): Server {
     return new DiscordServer(this.discordMessage.guild);
+  }
+
+  public get attachments(): Attachment[] {
+    return this.discordMessage.attachments.map(
+      attachment => new DiscordAttachment(attachment)
+    );
   }
 
   public async delete(): Promise<void> {
