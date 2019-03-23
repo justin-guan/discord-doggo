@@ -98,7 +98,13 @@ export default class Create extends AbstractCommand {
                 );
                 return;
               }
-              await messageSender.sendDM("Create command? <Y/N>");
+              await this.promptCreateCommandConfirmation(
+                messageSender,
+                name,
+                description,
+                type,
+                action
+              );
             } catch (e) {
               await messageSender.sendDM("Invalid action, please try again");
             }
@@ -235,6 +241,26 @@ export default class Create extends AbstractCommand {
     } else if (type === CustomCommandType.TEXT) {
       await messageSender.sendDM("What should this text command say?");
     }
+  }
+
+  private async promptCreateCommandConfirmation(
+    messageSender: MessageSender,
+    name: string,
+    description: string,
+    type: number,
+    action: string
+  ): Promise<void> {
+    const describeAction =
+      type === CustomCommandType.VOICE
+        ? `**Plays audio located at:** ${action}`
+        : `**Sends the text:** ${action}`;
+    messageSender.sendDM(
+      `__***Custom Command Details***__` +
+        `\n**name:** ${name}` +
+        `\n**description:** ${description}` +
+        `\n${describeAction}` +
+        `\nIs this ok? <Y/N>`
+    );
   }
 
   private createCustomCommand(
