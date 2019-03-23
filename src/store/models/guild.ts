@@ -6,6 +6,6 @@ export default interface Guild {
   setCommandPrefix(newPrefix: string): void;
   save(): Promise<Guild>;
   addNewCustomCommand(command: CustomCommand): void;
-  removeCustomCommand(commandName: string): void;
+  removeCustomCommand(commandName: string): boolean;
   getCustomCommand(commandName: string): CustomCommand | undefined;
 }

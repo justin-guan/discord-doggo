@@ -9,7 +9,7 @@ interface GuildDocument extends Document {
 
   changeCommandPrefix(newPrefix: string): void;
   addNewCommand(command: CustomCommand): void;
-  removeCommand(commandName: string): void;
+  removeCommand(commandName: string): boolean;
 }
 
 interface GuildModel extends Model<GuildDocument> {
@@ -77,10 +77,13 @@ schema.methods.addNewCommand = function addNewCommand(
 
 schema.methods.removeCommand = function removeCommand(
   commandName: string
-): void {
+): boolean {
+  const length = this.commands.length;
   this.commands = this.commands.filter(
     (command: CustomCommand) => command.name !== commandName
   );
+  const newLength = this.commands.length;
+  return length !== newLength;
 };
 
 // statics
@@ -132,8 +135,8 @@ class StoreGuild implements Guild {
     this.guild.addNewCommand(command);
   }
 
-  public removeCustomCommand(commandName: string): void {
-    this.guild.removeCommand(commandName);
+  public removeCustomCommand(commandName: string): boolean {
+    return this.guild.removeCommand(commandName);
   }
 
   public getCustomCommand(commandName: string): CustomCommand | undefined {

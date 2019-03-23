@@ -57,10 +57,11 @@ export default class Store {
   public async removeCustomCommand(
     serverId: string,
     commandName: string
-  ): Promise<void> {
+  ): Promise<boolean> {
     const guild = await this.databaseStore.getGuild(serverId);
-    guild.removeCustomCommand(commandName);
+    const removed = guild.removeCustomCommand(commandName);
     await guild.save();
+    return removed;
   }
 }
 
