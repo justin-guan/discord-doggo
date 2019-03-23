@@ -8,4 +8,5 @@ export default interface Guild {
   addNewCustomCommand(command: CustomCommand): void;
   removeCustomCommand(commandName: string): boolean;
   getCustomCommand(commandName: string): CustomCommand | undefined;
+  getAllCustomCommands(): CustomCommand[];
 }

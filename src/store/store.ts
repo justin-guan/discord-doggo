@@ -63,6 +63,13 @@ export default class Store {
     await guild.save();
     return removed;
   }
+
+  public async getAllCustomCommands(
+    serverId: string
+  ): Promise<CustomCommand[]> {
+    const guild = await this.databaseStore.getGuild(serverId);
+    return guild.getAllCustomCommands();
+  }
 }
 
 export interface CommandPrefixUpdate {

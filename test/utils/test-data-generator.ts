@@ -85,7 +85,8 @@ class TestDataGenerator {
       save: partial.save || jest.fn(),
       addNewCustomCommand: partial.addNewCustomCommand || jest.fn(),
       removeCustomCommand: partial.removeCustomCommand || jest.fn(),
-      getCustomCommand: partial.getCustomCommand || (() => undefined)
+      getCustomCommand: partial.getCustomCommand || (() => undefined),
+      getAllCustomCommands: partial.getAllCustomCommands || (() => [])
     };
   }
 
