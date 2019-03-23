@@ -25,6 +25,12 @@ In order to host this bot, you must also set up a [discord bot](#discord). Addit
 2. Next, select the newly created application and choose to add a bot user to the application. This will create a bot user for the application.
 3. A token associated with the bot should be available now. This token will be necessary when running the bot.
 
+Note: The bot must be added to the server, which can be done by following the below link. The `CLIENT_ID` can also be found on the Discord Application Management page above. Additionally, this bot uses several basic permissions
+
+```
+https://discordapp.com/oauth2/authorize?client_id=<CLIENT_ID>&scope=bot&permissions=3501056
+```
+
 <a name="voice"></a>
 
 ### Setting up Voice
