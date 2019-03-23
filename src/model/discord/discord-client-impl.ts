@@ -36,6 +36,8 @@ export default class DiscordClientImpl implements Client {
       vc => vc.channel.id === voiceChannelId
     );
     if (connection) {
+      // tslint:disable-next-line:no-any
+      (connection.player as any).streamingData.pausedTime = 0;
       await connection.playArbitraryInput(url);
     } else {
       return Promise.reject("Client is not connected to the voice channel");
