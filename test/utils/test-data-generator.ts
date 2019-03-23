@@ -30,6 +30,7 @@ class TestDataGenerator {
       joinCurrentVoiceChannel: partial.joinCurrentVoiceChannel || jest.fn(),
       leaveCurrentVoiceChannel: partial.leaveCurrentVoiceChannel || jest.fn(),
       isAdmin: partial.isAdmin || (() => TestDataGenerator.testAuthorIsAdmin),
+      canCollectMessages: partial.canCollectMessages || (() => true),
       collectMessages: partial.collectMessages || jest.fn()
     };
   }

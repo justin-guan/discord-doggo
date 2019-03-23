@@ -23,108 +23,119 @@ export default class Create extends AbstractCommand {
     messageSender: MessageSender
   ): Promise<void> {
     const server = data.rawMessage.server;
-    await messageSender.sendDM(`Creating a command in server ${server.name}`);
+    if (data.rawMessage.author.canCollectMessages()) {
+      await messageSender.sendDM(`Creating a command in server ${server.name}`);
+      await messageSender.sendDM("Please enter a name for your command");
+    } else {
+      await messageSender.replyMessage(
+        "You're already creating a command. Check your DMs for a message from me"
+      );
+      return;
+    }
     let step: Step = Step.NAME;
     let name: string;
     let description: string;
     let type: number;
     let action: string;
-    await messageSender.sendDM("Please enter a name for your command");
-    data.rawMessage.author.collectMessages(async (message, collector) => {
-      switch (step) {
-        case Step.NAME:
-          try {
-            const nameCollection = await this.collectName(
-              message,
-              data.store,
-              server.id
-            );
-            name = nameCollection[0];
-            step = nameCollection[1];
-            await messageSender.sendDM(
-              `What type of command is it?\n${
-                CustomCommandType.VOICE
-              }. Voice\n${CustomCommandType.TEXT}. Text `
-            );
-          } catch (e) {
-            await messageSender.sendDM(
-              "This command name cannot be used. A command with this name must not exist, and the command name must be alphanumeric. Please try again."
-            );
-          }
-          break;
-        case Step.TYPE:
-          try {
-            const typeCollection = await this.collectType(message);
-            type = typeCollection[0];
-            step = typeCollection[1];
-            await messageSender.sendDM("Please enter a description");
-          } catch (e) {
-            await messageSender.sendDM(
-              "Invalid type, please select a valid type"
-            );
-          }
-          break;
-        case Step.DESCRIPTION:
-          try {
-            const descriptionCollection = await this.collectDescription(
-              message
-            );
-            description = descriptionCollection[0];
-            step = descriptionCollection[1];
-            await this.promptForAction(messageSender, type);
-          } catch (e) {
-            await messageSender.sendDM(
-              "The description cannot be empty. Please enter a valid description"
-            );
-          }
-          break;
-        case Step.ACTION:
-          try {
-            const actionCollection = await this.collectAction(message, type);
-            action = actionCollection[0];
-            step = actionCollection[1];
-            if (step === Step.CANCEL) {
-              collector.destroy();
-              await messageSender.sendDM("Cancelled custom command creation!");
-              return;
+    const c = data.rawMessage.author.collectMessages(
+      async (message, collector) => {
+        switch (step) {
+          case Step.NAME:
+            try {
+              const nameCollection = await this.collectName(
+                message,
+                data.store,
+                server.id
+              );
+              name = nameCollection[0];
+              step = nameCollection[1];
+              await messageSender.sendDM(
+                `What type of command is it?\n${
+                  CustomCommandType.VOICE
+                }. Voice\n${CustomCommandType.TEXT}. Text `
+              );
+            } catch (e) {
+              await messageSender.sendDM(
+                "This command name cannot be used. A command with this name must not exist, and the command name must be alphanumeric. Please try again."
+              );
             }
-            await messageSender.sendDM("Create command? <Y/N>");
-          } catch (e) {
-            await messageSender.sendDM("Invalid action, please try again");
-          }
-          break;
-        case Step.CONFIRM:
-          try {
-            const confirmation = await this.collectConfirmation(message);
-            if (confirmation === CONFIRMATION.YES) {
-              try {
-                await this.createCustomCommand(
-                  data.store,
-                  server.id,
-                  name,
-                  description,
-                  type,
-                  action
-                );
-                await messageSender.sendDM("Command created!");
-              } catch (e) {
+            break;
+          case Step.TYPE:
+            try {
+              const typeCollection = await this.collectType(message);
+              type = typeCollection[0];
+              step = typeCollection[1];
+              await messageSender.sendDM("Please enter a description");
+            } catch (e) {
+              await messageSender.sendDM(
+                "Invalid type, please select a valid type"
+              );
+            }
+            break;
+          case Step.DESCRIPTION:
+            try {
+              const descriptionCollection = await this.collectDescription(
+                message
+              );
+              description = descriptionCollection[0];
+              step = descriptionCollection[1];
+              await this.promptForAction(messageSender, type);
+            } catch (e) {
+              await messageSender.sendDM(
+                "The description cannot be empty. Please enter a valid description"
+              );
+            }
+            break;
+          case Step.ACTION:
+            try {
+              const actionCollection = await this.collectAction(message, type);
+              action = actionCollection[0];
+              step = actionCollection[1];
+              if (step === Step.CANCEL) {
+                collector.destroy();
                 await messageSender.sendDM(
-                  "Something seems to have gone wrong while creating this command. Please try again at another time."
+                  "Cancelled custom command creation!"
                 );
+                return;
               }
-            } else {
-              await messageSender.sendDM("Command creation cancelled");
+              await messageSender.sendDM("Create command? <Y/N>");
+            } catch (e) {
+              await messageSender.sendDM("Invalid action, please try again");
             }
+            break;
+          case Step.CONFIRM:
+            try {
+              const confirmation = await this.collectConfirmation(message);
+              if (confirmation === CONFIRMATION.YES) {
+                try {
+                  await this.createCustomCommand(
+                    data.store,
+                    server.id,
+                    name,
+                    description,
+                    type,
+                    action
+                  );
+                  await messageSender.sendDM("Command created!");
+                } catch (e) {
+                  await messageSender.sendDM(
+                    "Something seems to have gone wrong while creating this command. Please try again at another time."
+                  );
+                }
+              } else {
+                await messageSender.sendDM("Command creation cancelled");
+              }
+              collector.destroy();
+            } catch (e) {
+              await messageSender.sendDM("Please enter Y or N");
+            }
+            break;
+          default:
             collector.destroy();
-          } catch (e) {
-            await messageSender.sendDM("Please enter Y or N");
-          }
-          break;
-        default:
-          collector.destroy();
-          break;
+            break;
+        }
       }
-    });
+    );
   }
 
   private async collectName(

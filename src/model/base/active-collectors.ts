@@ -11,20 +11,20 @@ export default class ActiveCollectors {
 
   private constructor() {}
 
-  public hasActiveCollector(channelId: string): boolean {
-    return this.activeCollectorChannelIds.has(channelId);
+  public hasActiveCollector(userId: string): boolean {
+    return this.activeCollectorChannelIds.has(userId);
   }
 
-  public addNewActiveCollector(channelId: string): void {
-    if (this.hasActiveCollector(channelId)) {
+  public addNewActiveCollector(userId: string): void {
+    if (this.hasActiveCollector(userId)) {
       throw new Error(
-        `An active collector is already running for user ${channelId}`
+        `An active collector is already running for user ${userId}`
       );
     }
-    this.activeCollectorChannelIds.set(channelId, undefined);
+    this.activeCollectorChannelIds.set(userId, undefined);
   }
 
-  public removeActiveCollector(channelId: string): void {
-    this.activeCollectorChannelIds.delete(channelId);
+  public removeActiveCollector(userId: string): void {
+    this.activeCollectorChannelIds.delete(userId);
   }
 }

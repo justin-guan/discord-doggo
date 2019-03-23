@@ -8,7 +8,8 @@ export default interface Author {
   joinCurrentVoiceChannel(): Promise<string>;
   leaveCurrentVoiceChannel(): Promise<void>;
   isAdmin(): boolean;
+  canCollectMessages(): boolean;
   collectMessages(
     onMessage: (msg: Message, collector: MessageCollector) => void
-  ): boolean;
+  ): void;
 }

@@ -52,15 +52,21 @@ export default class DiscordAuthorImpl implements Author {
     return this.discordMessage.member.roles.has(adminRole.id);
   }
 
+  public canCollectMessages(): boolean {
+    return !ActiveCollectors.getInstance().hasActiveCollector(
+      this.discordMessage.author.id
+    );
+  }
+
   public collectMessages(
     onMessage: (msg: Message, collector: MessageCollector) => void
-  ): boolean {
+  ): void {
     const activeCollectors = ActiveCollectors.getInstance();
-    const channelId = this.discordMessage.author.dmChannel.id;
-    if (activeCollectors.hasActiveCollector(channelId)) {
-      return false;
+    const authorId = this.discordMessage.author.id;
+    if (!this.canCollectMessages()) {
+      return;
     }
-    activeCollectors.addNewActiveCollector(channelId);
+    activeCollectors.addNewActiveCollector(authorId);
     const collector = this.discordMessage.author.dmChannel.createMessageCollector(
       m => m.author.id === this.discordMessage.author.id
     );
@@ -70,8 +76,7 @@ export default class DiscordAuthorImpl implements Author {
       onMessage(message, msgCollector);
     });
     collector.on("end", () => {
-      activeCollectors.removeActiveCollector(channelId);
+      activeCollectors.removeActiveCollector(authorId);
     });
-    return true;
   }
 }

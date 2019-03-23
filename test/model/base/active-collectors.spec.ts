@@ -1,10 +1,10 @@
 import ActiveCollectors from "@model/base/active-collectors";
 
 describe("Active Collectors", () => {
-  const testChannelId = "test";
+  const testUserId = "test";
 
   beforeEach(() => {
-    ActiveCollectors.getInstance().removeActiveCollector(testChannelId);
+    ActiveCollectors.getInstance().removeActiveCollector(testUserId);
   });
 
   test("should only have one global singleton instance of active collectors", () => {
@@ -14,27 +14,25 @@ describe("Active Collectors", () => {
   test("should add an active collector", () => {
     const activeCollectors = ActiveCollectors.getInstance();
 
-    activeCollectors.addNewActiveCollector(testChannelId);
+    activeCollectors.addNewActiveCollector(testUserId);
 
-    expect(activeCollectors.hasActiveCollector(testChannelId)).toEqual(true);
+    expect(activeCollectors.hasActiveCollector(testUserId)).toEqual(true);
   });
 
   test("should fail to add an active collector that already exists", () => {
     const activeCollectors = ActiveCollectors.getInstance();
 
-    activeCollectors.addNewActiveCollector(testChannelId);
+    activeCollectors.addNewActiveCollector(testUserId);
 
-    expect(() =>
-      activeCollectors.addNewActiveCollector(testChannelId)
-    ).toThrow();
+    expect(() => activeCollectors.addNewActiveCollector(testUserId)).toThrow();
   });
 
   test("should remove an active collector", () => {
     const activeCollectors = ActiveCollectors.getInstance();
 
-    activeCollectors.addNewActiveCollector(testChannelId);
-    activeCollectors.removeActiveCollector(testChannelId);
+    activeCollectors.addNewActiveCollector(testUserId);
+    activeCollectors.removeActiveCollector(testUserId);
 
-    expect(activeCollectors.hasActiveCollector(testChannelId)).toEqual(false);
+    expect(activeCollectors.hasActiveCollector(testUserId)).toEqual(false);
   });
 });
