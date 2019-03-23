@@ -208,8 +208,9 @@ describe("Mongoose Guild Schema", () => {
     });
     const g = await Guild.findGuild(testGuildId);
 
-    g.removeCustomCommand(testCommandName);
+    const removed = g.removeCustomCommand(testCommandName);
 
+    expect(removed).toEqual(true);
     expect(guild.commands).not.toContainEqual(
       expect.objectContaining({
         name: testCommandName
@@ -237,8 +238,9 @@ describe("Mongoose Guild Schema", () => {
       })
     );
 
-    g.removeCustomCommand(testCommandName2);
+    const removed = g.removeCustomCommand(testCommandName2);
 
+    expect(removed).toEqual(false);
     expect(guild.commands).toHaveLength(1);
     expect(guild.commands).toContainEqual(
       expect.objectContaining({

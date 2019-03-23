@@ -259,12 +259,25 @@ describe("Store", () => {
   });
 
   test("should remove a custom command", async () => {
+    mockGuild
+      .setup(g => g.removeCustomCommand(TypeMoq.It.isAny()))
+      .returns(() => true);
     const customCommand = testDataGenerator.generateCustomCommand();
     await store.addCustomCommand(testServerId, customCommand);
 
     const result = store.removeCustomCommand(testServerId, customCommand.name);
 
-    await expect(result).resolves.toBeUndefined();
+    await expect(result).resolves.toEqual(true);
+  });
+
+  test("should not remove a custom command", async () => {
+    mockGuild
+      .setup(g => g.removeCustomCommand(TypeMoq.It.isAny()))
+      .returns(() => false);
+
+    const result = store.removeCustomCommand(testServerId, "");
+
+    await expect(result).resolves.toEqual(false);
   });
 
   function setupMockGuild(): void {
