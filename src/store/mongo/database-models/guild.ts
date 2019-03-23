@@ -144,6 +144,10 @@ class StoreGuild implements Guild {
       customCommand => customCommand.name === commandName
     );
   }
+
+  public getAllCustomCommands(): CustomCommand[] {
+    return this.guild.commands;
+  }
 }
 
 export const Guild = model<GuildDocument>("Guild", schema) as GuildModel;

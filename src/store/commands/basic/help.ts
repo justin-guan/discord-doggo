@@ -4,6 +4,7 @@ import { Commands as AdminCommands } from "@store/commands/admin";
 import { Commands as BasicCommands } from "@store/commands/basic";
 import Command from "@store/commands/command";
 import CommandExecutionData from "@store/commands/command-execution-data";
+import ExecutableCustomCommand from "@store/commands/executable-custom-command";
 
 export default class Help extends AbstractCommand implements Command {
   public getCommandName(): string {
@@ -32,12 +33,29 @@ export default class Help extends AbstractCommand implements Command {
       data.prefix,
       AdminCommands
     );
-    const toDisplay = basicCommandTitle.concat(
+    let toDisplay = basicCommandTitle.concat(
       basicCommandsToDisplay,
       ["\n"],
       adminCommandTitle,
       adminCommandsToDisplay
     );
+    const customCommands = await data.store.getAllCustomCommands(
+      data.rawMessage.server.id
+    );
+    if (customCommands.length !== 0) {
+      const customCommandTitle = [`***__Custom Commands__***`];
+      const customCommandsDisplay = this.createCommandsToDisplay(
+        data.prefix,
+        new Set(
+          customCommands.map(custom => new ExecutableCustomCommand(custom))
+        )
+      );
+      toDisplay = toDisplay.concat(
+        ["\n"],
+        customCommandTitle,
+        customCommandsDisplay
+      );
+    }
     await messageSender.sendSplitMessage(toDisplay);
   }
 

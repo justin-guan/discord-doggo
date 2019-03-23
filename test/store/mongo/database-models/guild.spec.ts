@@ -297,6 +297,28 @@ describe("Mongoose Guild Schema", () => {
     expect(command).toBeUndefined();
   });
 
+  test("should get all custom commands in guild", async () => {
+    const testCustomCommand = testDataGenerator.generateCustomCommand();
+    const guild = new Guild({
+      _id: testGuildId,
+      commands: [testCustomCommand]
+    });
+    jest.spyOn(Guild, "findOne").mockImplementation(() => {
+      return {
+        exec: () => Promise.resolve(guild)
+      };
+    });
+    const g = await Guild.findGuild(testGuildId);
+
+    const commands = g.getAllCustomCommands();
+    expect(commands).toContainEqual(
+      expect.objectContaining({
+        name: testCustomCommand.name
+      })
+    );
+    expect(commands).toHaveLength(1);
+  });
+
   function generateTestCustomCommand(commandName: string): CustomCommand {
     return testDataGenerator.generateCustomCommand({
       name: commandName

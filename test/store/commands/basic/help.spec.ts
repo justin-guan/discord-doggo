@@ -46,16 +46,24 @@ describe("Help Command", () => {
   const help = new Help();
   const helpCommandName = "help";
   const testMessage: Message = testDataGenerator.generateTestMessage();
+  const mockStore = TypeMoq.Mock.ofType<Store>();
   const testExecutionData: CommandExecutionData = {
     prefix: "!",
     rawMessage: testMessage,
-    store: TypeMoq.Mock.ofType<Store>().object,
+    store: mockStore.object,
     client: TypeMoq.Mock.ofType<Client>().object,
     arguments: []
   };
   const mockMessageSender = TypeMoq.Mock.ofType<MessageSender>();
 
+  beforeEach(() => {
+    mockStore
+      .setup(s => s.getAllCustomCommands(TypeMoq.It.isAny()))
+      .returns(() => Promise.resolve([]));
+  });
+
   afterEach(() => {
+    mockStore.reset();
     mockMessageSender.reset();
   });
 
@@ -77,6 +85,41 @@ describe("Help Command", () => {
     await expect(result).resolves.toBeUndefined();
     const expectedToDisplay =
       basicCommandCount + adminCommandCount + helpHeaders;
+    expect(helpData).toHaveLength(expectedToDisplay);
+    mockMessageSender.verify(
+      s => s.sendSplitMessage(TypeMoq.It.isAny()),
+      TypeMoq.Times.once()
+    );
+  });
+
+  test("should send help data with custom commands when executed", async () => {
+    const testCustomCommands = [
+      testDataGenerator.generateCustomCommand(),
+      testDataGenerator.generateCustomCommand()
+    ];
+    mockStore.reset();
+    mockStore
+      .setup(s => s.getAllCustomCommands(TypeMoq.It.isAny()))
+      .returns(() => Promise.resolve(testCustomCommands));
+
+    let helpData: string[] = [];
+    mockMessageSender
+      .setup(s => s.sendSplitMessage(TypeMoq.It.isAny()))
+      .returns((data: string[]) => {
+        helpData = data;
+        return Promise.resolve();
+      });
+
+    const result = help.execute(testExecutionData, mockMessageSender.object);
+
+    await expect(result).resolves.toBeUndefined();
+    const customHeaderCount = 2;
+    const headerCount = helpHeaders + customHeaderCount;
+    const expectedToDisplay =
+      basicCommandCount +
+      adminCommandCount +
+      headerCount +
+      testCustomCommands.length;
     expect(helpData).toHaveLength(expectedToDisplay);
     mockMessageSender.verify(
       s => s.sendSplitMessage(TypeMoq.It.isAny()),
