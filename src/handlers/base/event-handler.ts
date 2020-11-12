@@ -2,8 +2,8 @@ import VoiceSynthesizer from "@handlers/base/voice-synthesizer";
 import logger from "@logger";
 import { MessageSender } from "@messenger/base/message-sender";
 import Client from "@model/base/client";
+import Member from "@model/base/member";
 import Message from "@model/base/message";
-import VoiceState from "@model/base/voicestate";
 import CommandExecutionDataImpl from "@store/commands/command-execution-data-impl";
 import { CustomCommandType } from "@store/models/custom-command";
 import Store from "@store/store";
@@ -60,25 +60,25 @@ export default class EventHandler {
   }
 
   public async onVoiceStateUpdate(
-    oldVoiceState: VoiceState,
-    newVoiceState: VoiceState
+    oldMember: Member,
+    newMember: Member
   ): Promise<void> {
-    const oldVoiceId = oldVoiceState.voiceChannelId;
-    const newVoiceId = newVoiceState.voiceChannelId;
-    const save = this.checkIfBotVoiceStateUpdate(newVoiceState.id);
-    if (newVoiceState.id === this.client.id || oldVoiceId === newVoiceId) {
+    const oldVoiceId = oldMember.voiceChannelId;
+    const newVoiceId = newMember.voiceChannelId;
+    const save = this.checkIfBotVoiceStateUpdate(newMember.id);
+    if (newMember.id === this.client.id || oldVoiceId === newVoiceId) {
       await save;
       return;
     }
     const promises = [save];
-    const name = newVoiceState.getDisplayName();
+    const name = newMember.getDisplayName();
     if (this.client.isInVoiceChannel(newVoiceId)) {
-      logger.info(`${name} (${newVoiceState.id}) joined channel ${newVoiceId}`);
-      const say = this.sayJoin(newVoiceId, newVoiceState.getDisplayName());
+      logger.info(`${name} (${newMember.id}) joined channel ${newVoiceId}`);
+      const say = this.sayJoin(newVoiceId, newMember.getDisplayName());
       promises.push(say);
     } else if (this.client.isInVoiceChannel(oldVoiceId)) {
-      logger.info(`${name} (${newVoiceState.id}) left channel ${oldVoiceId}`);
-      const say = this.sayLeave(oldVoiceId, newVoiceState.getDisplayName());
+      logger.info(`${name} (${newMember.id}) left channel ${oldVoiceId}`);
+      const say = this.sayLeave(oldVoiceId, newMember.getDisplayName());
       promises.push(say);
     }
     await Promise.all(promises);

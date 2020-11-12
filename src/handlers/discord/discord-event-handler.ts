@@ -1,7 +1,7 @@
 import EventHandler from "@handlers/base/event-handler";
 import { DiscordMessageSender } from "@messenger/discord/discord-message-sender";
 import DiscordClientImpl from "@model/discord/discord-client-impl";
-import DiscordVoiceStateImpl from "@model/discord/discord-member-impl";
+import DiscordMemberImpl from "@model/discord/discord-member-impl";
 import DiscordMessageImpl from "@model/discord/discord-message-impl";
 import {
   Client as DiscordClient,
@@ -38,8 +38,8 @@ export default class DiscordEventHandler {
     oldVoiceState: DiscordVoiceState,
     newVoiceState: DiscordVoiceState
   ): Promise<void> => {
-    const oldMember = new DiscordVoiceStateImpl(oldVoiceState);
-    const newMember = new DiscordVoiceStateImpl(newVoiceState);
+    const oldMember = new DiscordMemberImpl(oldVoiceState);
+    const newMember = new DiscordMemberImpl(newVoiceState);
     await this.eventHandler.onVoiceStateUpdate(oldMember, newMember);
   };
 }

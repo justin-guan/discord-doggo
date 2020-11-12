@@ -8,7 +8,7 @@ jest.mock("discord.js", () => {
 
 import DiscordAuthorImpl from "@model/discord/discord-author-impl";
 import DiscordMessageImpl from "@model/discord/discord-message-impl";
-import { Collection, Emoji, Message } from "discord.js";
+import { Collection, GuildEmoji, Message } from "discord.js";
 import * as TypeMoq from "typemoq";
 import testDataGenerator from "../../utils/test-data-generator";
 import testDiscordMockGenerator from "../../utils/test-discord-data-generator";
@@ -71,8 +71,8 @@ describe("Discord Message Implementation", () => {
     const emojiId = "305818615712579584";
     const testString = `<:ayy:${emojiId}><:ayy:${emojiId}>`;
     const customEmojiCount = 2;
-    const guildEmojis = new Collection<string, Emoji>();
-    const emojiMock = TypeMoq.Mock.ofType<Emoji>();
+    const guildEmojis = new Collection<string, GuildEmoji>();
+    const emojiMock = TypeMoq.Mock.ofType<GuildEmoji>();
     emojiMock.setup(e => e.id).returns(() => emojiId);
     guildEmojis.set(emojiId, emojiMock.object);
     const msgMock = testDiscordMockGenerator.generateMockMessage(

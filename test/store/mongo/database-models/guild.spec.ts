@@ -1,3 +1,5 @@
+// @ts-nocheck (Jest and Mongoose don't seem to be playing nicely together with Types)
+
 import { CustomCommand, CustomCommandType } from "@store/models/custom-command";
 import { Guild } from "@store/mongo/database-models/guild";
 import testDataGenerator from "../../../utils/test-data-generator";

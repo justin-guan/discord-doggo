@@ -11,6 +11,7 @@ import DiscordClientImpl from "@model/discord/discord-client-impl";
 import {
   Client,
   ClientUser,
+  ClientVoiceManager,
   Collection,
   VoiceChannel,
   VoiceConnection
@@ -93,12 +94,16 @@ describe("Discord Client Implementation", () => {
   ): TypeMoq.IMock<Client> {
     const mock = TypeMoq.Mock.ofType<Client>();
     mock.setup(c => c.user).returns(() => createMockUser(userId).object);
-    mock.setup(c => c.voiceConnections).returns(() => {
+    mock.setup(c => c.voice).returns(() => {
       const collection = new Collection<string, VoiceConnection>();
       voiceConnectionGuildId.forEach((id, idx) => {
         collection.set(idx.toString(), createMockVoiceConnection(id).object);
       });
-      return collection;
+      const mockClientVoiceManager = TypeMoq.Mock.ofType<ClientVoiceManager>();
+      mockClientVoiceManager
+        .setup(m => m.connections)
+        .returns(() => collection);
+      return mockClientVoiceManager.object;
     });
     return mock;
   }
