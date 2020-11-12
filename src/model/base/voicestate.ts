@@ -1,4 +1,4 @@
-export default interface Member {
+export default interface VoiceState {
   readonly id: string;
   readonly voiceChannelId: string;
 

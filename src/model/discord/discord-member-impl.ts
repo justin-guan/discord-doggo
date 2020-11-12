@@ -1,20 +1,25 @@
-import Member from "@model/base/member";
-import { GuildMember } from "discord.js";
+import VoiceState from "@model/base/voicestate";
+import { VoiceState as DiscordVoiceState } from "discord.js";
 
-export default class DiscordMemberImpl implements Member {
+export default class DiscordVoiceStateImpl implements VoiceState {
   public id: string;
   public voiceChannelId: string;
-  private guildMember: GuildMember;
+  private discordVoiceState: DiscordVoiceState;
 
-  constructor(guildMember: GuildMember) {
-    this.id = guildMember.id;
-    this.voiceChannelId = guildMember.voiceChannelID;
-    this.guildMember = guildMember;
+  constructor(discordVoiceState: DiscordVoiceState) {
+    this.id = discordVoiceState.id;
+    this.voiceChannelId = discordVoiceState.channelID
+      ? discordVoiceState.channelID
+      : "";
+    this.discordVoiceState = discordVoiceState;
   }
 
   public getDisplayName(): string {
-    return this.guildMember.nickname
-      ? this.guildMember.nickname
-      : this.guildMember.user.username;
+    if (this.discordVoiceState.member) {
+      return this.discordVoiceState.member.nickname
+        ? this.discordVoiceState.member.nickname
+        : this.discordVoiceState.member.user.username;
+    }
+    return "";
   }
 }
