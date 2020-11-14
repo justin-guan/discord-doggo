@@ -1,3 +1,4 @@
+import Collection from "@discordjs/collection";
 import Attachment from "@model/base/attachment";
 import Author from "@model/base/author";
 import { EmojiCounter, EmojiType } from "@model/base/emoji-counter";
@@ -7,7 +8,7 @@ import DiscordAttachment from "@model/discord/discord-attachment";
 import DiscordAuthorImpl from "@model/discord/discord-author-impl";
 import DiscordCustomEmoji from "@model/discord/discord-custom-emoji";
 import DiscordServer from "@model/discord/discord-server";
-import { Message as DiscordMessage } from "discord.js";
+import { GuildEmoji, Message as DiscordMessage } from "discord.js";
 import emojiRegex from "emoji-regex";
 
 export default class DiscordMessageImpl implements Message {
@@ -23,7 +24,7 @@ export default class DiscordMessageImpl implements Message {
   }
 
   public get serverId(): string {
-    return this.discordMessage.guild.id;
+    return this.discordMessage.guild ? this.discordMessage.guild.id : "";
   }
 
   public get message(): string {
@@ -63,7 +64,9 @@ export default class DiscordMessageImpl implements Message {
   }
 
   private countCustomEmojisIntoMap(map: Map<string, EmojiCounter>): void {
-    const emojis = this.discordMessage.guild.emojis;
+    const emojis = this.discordMessage.guild
+      ? this.discordMessage.guild.emojis.cache
+      : new Collection<string, GuildEmoji>();
     const matches =
       this.discordMessage.content.match(DiscordMessageImpl.EMOJI_REGEX) || [];
     matches.forEach(emoji => {
@@ -95,14 +98,15 @@ export default class DiscordMessageImpl implements Message {
   }
 
   private countReactionsIntoMap(map: Map<string, EmojiCounter>): void {
-    this.discordMessage.reactions.forEach(reaction => {
+    this.discordMessage.reactions.cache.forEach(reaction => {
       function createNewEmojiCount(): EmojiCounter {
         return reaction.emoji.id !== null
           ? new EmojiCounter(reaction.emoji.id, EmojiType.CUSTOM)
           : new EmojiCounter(reaction.emoji.name, EmojiType.UNICODE);
       }
-      const emojiCount = map.get(reaction.emoji.id) || createNewEmojiCount();
-      emojiCount.add(reaction.count);
+      const emojiId = reaction.emoji.id ? reaction.emoji.id : "";
+      const emojiCount = map.get(emojiId) || createNewEmojiCount();
+      emojiCount.add(reaction.count ? reaction.count : 0);
       map.set(emojiCount.identifier, emojiCount);
     });
   }

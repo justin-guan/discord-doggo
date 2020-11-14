@@ -25,9 +25,9 @@ export default class DiscordTextChannel implements TextChannel {
   }
 
   private async getLatestMessage(): Promise<Message | null> {
-    const latestMessage = await this.textChannel.fetchMessages({ limit: 1 });
+    const latestMessage = await this.textChannel.messages.fetch({ limit: 1 });
     if (latestMessage.size > 0) {
-      return new DiscordMessageImpl(latestMessage.last());
+      return new DiscordMessageImpl(latestMessage.last()!);
     }
     return null;
   }
@@ -36,12 +36,12 @@ export default class DiscordTextChannel implements TextChannel {
     from: string, // exclusive
     predicate: (message: Message) => void
   ): Promise<void> {
-    const messages = await this.textChannel.fetchMessages({ before: from });
+    const messages = await this.textChannel.messages.fetch({ before: from });
     for (const message of messages.values()) {
       predicate(new DiscordMessageImpl(message));
     }
     if (messages.size > 0) {
-      await this.getPreviousMessages(messages.last().id, predicate);
+      await this.getPreviousMessages(messages.last()!.id, predicate);
     }
   }
 }

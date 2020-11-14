@@ -25,7 +25,7 @@ export class DiscordMessageSender implements MessageSender {
   }
 
   public getFormattedCustomEmoji(emojiId: string): string {
-    const formatted = this.message.client.emojis.find(
+    const formatted = this.message.client.emojis.cache.find(
       emoji => emoji.id === emojiId
     );
     return formatted ? formatted.toString() : emojiId;

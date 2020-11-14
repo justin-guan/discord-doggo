@@ -2,12 +2,17 @@ import Author from "@model/base/author";
 import Message from "@model/base/message";
 import Server from "@model/base/server";
 import {
+  ChannelManager,
   Collection,
   Emoji,
   Guild,
   GuildChannel,
+  GuildChannelManager,
+  GuildEmoji,
+  GuildEmojiManager,
   Message as DiscordMessage,
   MessageReaction,
+  ReactionManager,
   TextChannel,
   User
 } from "discord.js";
@@ -29,20 +34,28 @@ class TestDiscordMockGenerator {
 
   public generateMockGuild(
     partial: Partial<Server>,
-    guildEmojis: Collection<string, Emoji> = new Collection()
+    guildEmojis: Collection<string, GuildEmoji> = new Collection()
   ): TypeMoq.IMock<Guild> {
     const server = testDataGenerator.generateTestServer();
     const mock = TypeMoq.Mock.ofType<Guild>();
     mock.setup(g => g.id).returns(() => partial.id || server.id);
-    const channels = new Collection<string, GuildChannel>();
-    mock.setup(g => g.channels).returns(() => channels);
-    mock.setup(g => g.emojis).returns(() => guildEmojis);
+    mock.setup(g => g.channels).returns(() => {
+      const mockChannelManager = TypeMoq.Mock.ofType<GuildChannelManager>();
+      const channels = new Collection<string, GuildChannel>();
+      mockChannelManager.setup(m => m.cache).returns(() => channels);
+      return mockChannelManager.object;
+    });
+    mock.setup(g => g.emojis).returns(() => {
+      const mockGuildEmojiManager = TypeMoq.Mock.ofType<GuildEmojiManager>();
+      mockGuildEmojiManager.setup(m => m.cache).returns(() => guildEmojis);
+      return mockGuildEmojiManager.object;
+    });
     return mock;
   }
 
   public generateMockMessage(
     partial: Partial<Message>,
-    guildEmojis: Collection<string, Emoji> = new Collection(),
+    guildEmojis: Collection<string, GuildEmoji> = new Collection(),
     reactions: Collection<string, MessageReaction> = new Collection()
   ): TypeMoq.IMock<DiscordMessage> {
     const message = testDataGenerator.generateTestMessage();
@@ -58,7 +71,11 @@ class TestDiscordMockGenerator {
     mock
       .setup(m => m.content)
       .returns(() => partial.message || message.message);
-    mock.setup(m => m.reactions).returns(() => reactions);
+    mock.setup(m => m.reactions).returns(() => {
+      const mockReactionManager = TypeMoq.Mock.ofType<ReactionManager>();
+      mockReactionManager.setup(m => m.cache).returns(() => reactions);
+      return mockReactionManager.object;
+    });
     return mock;
   }
 

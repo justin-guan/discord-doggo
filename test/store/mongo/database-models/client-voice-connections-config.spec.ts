@@ -1,3 +1,5 @@
+// @ts-nocheck (Jest and Mongoose don't seem to be playing nicely together with Types)
+
 import { ClientVoiceConnectionsConfig } from "@store/mongo/database-models/client-voice-connections-config";
 
 describe("Mongoose Client Voice Connections Config Schema", () => {

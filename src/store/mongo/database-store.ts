@@ -11,10 +11,10 @@ export default class DatabaseStore implements Database {
   private connectionsConfig: ClientVoiceConnectionsConfig | undefined;
 
   public async connect(uri: string): Promise<void> {
-    await mongoose.connect(
-      uri,
-      { useNewUrlParser: true }
-    );
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
   }
 
   public async close(): Promise<void> {

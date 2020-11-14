@@ -9,19 +9,26 @@ export default class DiscordClientImpl implements Client {
   }
 
   public get id(): string {
-    return this.client.user.id;
+    const throwError = () => {
+      throw Error("Client user is not associated with an ID");
+    };
+    return this.client.user ? this.client.user.id : throwError();
   }
 
   public isInVoiceChannel(channelId: string): boolean {
-    return this.client.voiceConnections.some(vc => vc.channel.id === channelId);
+    return this.client.voice
+      ? this.client.voice.connections.some(vc => vc.channel.id === channelId)
+      : false;
   }
 
   public getConnectedVoiceChannelIds(): string[] {
-    return this.client.voiceConnections.map(vc => vc.channel.id);
+    return this.client.voice
+      ? this.client.voice.connections.map(vc => vc.channel.id)
+      : [];
   }
 
   public async joinVoiceChannel(voiceChannelId: string): Promise<void> {
-    const channel = this.client.channels.get(voiceChannelId);
+    const channel = this.client.channels.cache.get(voiceChannelId);
     if (channel instanceof VoiceChannel) {
       await (channel as VoiceChannel).join();
     } else {
@@ -32,13 +39,16 @@ export default class DiscordClientImpl implements Client {
   }
 
   public async play(voiceChannelId: string, url: string): Promise<void> {
-    const connection = this.client.voiceConnections.find(
-      vc => vc.channel.id === voiceChannelId
-    );
+    const connection = this.client.voice
+      ? this.client.voice.connections.find(
+          vc => vc.channel.id === voiceChannelId
+        )
+      : null;
     if (connection) {
       // tslint:disable-next-line:no-any
-      (connection.player as any).streamingData.pausedTime = 0;
-      await connection.playArbitraryInput(url);
+      // TODO: Investigate if this is still necessary with v12 changes
+      // (connection.player as any).streamingData.pausedTime = 0;
+      await connection.play(url);
     } else {
       return Promise.reject("Client is not connected to the voice channel");
     }

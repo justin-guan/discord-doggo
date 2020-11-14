@@ -114,9 +114,13 @@ export default class EventHandler {
     text: string
   ): Promise<void> {
     try {
-      const absPath = path.resolve(__dirname, `${username} ${text}.mp3`);
+      const nonLatinUsername = username.replace(/[\u0250-\ue007]/g, "");
+      const absPath = path.resolve(
+        __dirname,
+        `${nonLatinUsername} ${text}.mp3`
+      );
       const synthPath = await this.voiceSynthesizer.synthesize(
-        `${username} ${text}`,
+        `${nonLatinUsername} ${text}`,
         absPath
       );
       logger.info(`Synthesized voice file at ${synthPath}`);

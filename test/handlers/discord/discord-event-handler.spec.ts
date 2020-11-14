@@ -15,10 +15,8 @@ jest.mock("@handlers/base/event-handler", () => {
 });
 
 import { Collection as MockCollection } from "../../mocks/discord.js/collection";
-import { VoiceChannel as MockVoiceChannel } from "../../mocks/discord.js/voice-channel";
 jest.mock("discord.js", () => {
   return {
-    VoiceChannel: MockVoiceChannel,
     Collection: MockCollection
   };
 });
@@ -28,9 +26,10 @@ import { DiscordMessageSender } from "@messenger/discord/discord-message-sender"
 import DiscordMessageImpl from "@model/discord/discord-message-impl";
 import {
   Client,
-  GuildMember,
   Message as DiscordMessage,
-  User
+  User,
+  VoiceChannel,
+  VoiceState
 } from "discord.js";
 import * as TypeMoq from "typemoq";
 
@@ -159,13 +158,13 @@ describe("Discord Event Handler", () => {
       const id = "id";
       const oldVoiceId = "old voice id";
       const newVoiceId = "new voice id";
-      const oldMember = createMockMember(id, oldVoiceId);
-      const newMember = createMockMember(id, newVoiceId);
+      const oldVoiceState = createMockVoiceState(id, oldVoiceId);
+      const newVoiceState = createMockVoiceState(id, newVoiceId);
       mockOnVoiceStateUpdateHandler.mockImplementation(() => Promise.resolve());
 
       const result = handler.onVoiceStateUpdate(
-        oldMember.object,
-        newMember.object
+        oldVoiceState.object,
+        newVoiceState.object
       );
 
       await expect(result).resolves.toBeUndefined();
@@ -175,29 +174,39 @@ describe("Discord Event Handler", () => {
       const id = "id";
       const oldVoiceId = "old voice id";
       const newVoiceId = "new voice id";
-      const oldMember = createMockMember(id, oldVoiceId);
-      const newMember = createMockMember(id, newVoiceId);
+      const oldVoiceState = createMockVoiceState(id, oldVoiceId);
+      const newVoiceState = createMockVoiceState(id, newVoiceId);
       const testError = new Error();
       mockOnVoiceStateUpdateHandler.mockImplementation(() =>
         Promise.reject(testError)
       );
 
       const result = handler.onVoiceStateUpdate(
-        oldMember.object,
-        newMember.object
+        oldVoiceState.object,
+        newVoiceState.object
       );
 
       await expect(result).rejects.toBe(testError);
     });
 
-    function createMockMember(
+    function createMockVoiceState(
       id: string,
       voiceId: string
-    ): TypeMoq.IMock<GuildMember> {
-      const mockMember = TypeMoq.Mock.ofType<GuildMember>();
+    ): TypeMoq.IMock<VoiceState> {
+      const mockMember = TypeMoq.Mock.ofType<VoiceState>();
       mockMember.setup(m => m.id).returns(() => id);
-      mockMember.setup(m => m.voiceChannelID).returns(() => voiceId);
+      mockMember
+        .setup(m => m.channel)
+        .returns(() => createMockVoiceChannel(voiceId).object);
       return mockMember;
+    }
+
+    function createMockVoiceChannel(
+      voiceId: string
+    ): TypeMoq.IMock<VoiceChannel> {
+      const mockVoiceChannel = TypeMoq.Mock.ofType<VoiceChannel>();
+      mockVoiceChannel.setup(m => m.id).returns(() => voiceId);
+      return mockVoiceChannel;
     }
   });
 
