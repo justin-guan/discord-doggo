@@ -13,7 +13,7 @@ This is a bot for Discord that is the rewrite and continuation of [Discord Annou
 
 ## Requirements
 
-Please use Node v8.2.0 or higher. This bot utilizes the `async/await` keywords which are only available in Node v8 and higher. See [the Nodejs website](https://nodejs.org/en) for more details on Node.js installation.
+Please use Node v14.15.0 or higher. See [the Nodejs website](https://nodejs.org/en) for more details on Node.js installation.
 
 In order to host this bot, you must also set up a [discord bot](#discord). Additionally, a web API that produces voice as audio files must be made available. See [Setting up Voice](#voice) for more details.
 
@@ -69,26 +69,9 @@ https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=
 
 ## Running the Bot
 
-1. Ensure that Node v8.2.0 or higher is installed. This can be checked by running `node -v`. See the <a href=https://nodejs.org/>node.js website</a> for more details on installing the latest version of node.
-2. Install `FFmpeg` so that the bot can speak in voice channels.
-
-### Windows
-
-Download `FFmpeg` from the official website https://www.ffmpeg.org/ or using chocolatey (`choco install ffmpeg`)
-
-### Linux
-
-Use your system's package manager.
-
-### MacOS
-
-Install ffmpeg using brew: `brew install ffmpeg`
-
-### Heroku
-
-For Heroku deployments, an `FFmpeg` buildpack will need to be installed.
-
-3. Run `npm install` to install all necessary dependencies. Some peer dependencies may be missing, these are not necessary to run the bot and can be ignored.
+1. Ensure that Node v14.15.0 or higher is installed. This can be checked by running `node -v`. See the <a href=https://nodejs.org/>node.js website</a> for more details on installing the latest version of node.
+2. Run `npm install` to install all necessary dependencies. Some peer dependencies may be missing, these are not necessary to run the bot and can be ignored.
+    1. Note for Windows, `msvs` may be required for `node-gyp` to build properly. See [this](https://stackoverflow.com/a/59882818) for help on resolving this issue.
 4. Export the Discord Bot Token, the Voice API url, and the MongoDB url. This can be done as follows:
 
 ```sh
@@ -104,5 +87,5 @@ set VOICE_URL=<VOICE_URL>
 set DISCORD_TOKEN=<DISCORD_TOKEN>
 set MONGODB_URL=<MONGODB_URL>
 ```
-
-4. Type `npm start` to start the bot now
+4. Build the project by running `npm run build`
+5. Type `npm start` to start the bot now
