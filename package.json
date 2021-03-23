@@ -51,6 +51,7 @@
     "discord.js": "^12.4.1",
     "emoji-regex": "^7.0.3",
     "erlpack": "github:discord/erlpack",
+    "ffmpeg-static": "^4.2.8",
     "libsodium-wrappers": "^0.7.8",
     "mongoose": "^5.10.13",
     "opusscript": "0.0.7",
