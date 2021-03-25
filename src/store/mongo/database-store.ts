@@ -6,7 +6,6 @@ import * as DatabaseGuildModel from "@store/mongo/database-models/guild";
 import mongoose from "mongoose";
 
 export default class DatabaseStore implements Database {
-  private database = mongoose.connection;
   private guildCache = new Map<string, Guild>();
   private connectionsConfig: ClientVoiceConnectionsConfig | undefined;
 
@@ -18,7 +17,7 @@ export default class DatabaseStore implements Database {
   }
 
   public async close(): Promise<void> {
-    await this.database.close();
+    await mongoose.connection.close();
   }
 
   public async getAllGuilds(): Promise<Guild[]> {
