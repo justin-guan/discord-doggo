@@ -18,9 +18,13 @@ class DiscordMessenger implements Messenger {
   }
 
   public async stop(): Promise<void> {
-    const clientPromise = this.client.destroy();
-    const handlerPromise = this.eventHandler.destroy();
-    await Promise.all([clientPromise, handlerPromise]);
+    await this.eventHandler.destroy();
+    // Client needs to tear down any existing voice connections before shutdown
+    // otherwise the voice connections may become zombie processes after client destruction
+    this.client.voice?.connections?.forEach(connection => {
+      connection.disconnect();
+    });
+    await this.client.destroy();
   }
 }
 

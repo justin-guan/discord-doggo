@@ -9,18 +9,14 @@ import messenger from "@messenger/discord/discord-messenger";
       databaseUrl: mongoDbUrl
     });
   } catch (e) {
-    logger.error("Unable to start messenger");
+    logger.error("Unable to start bot");
   }
 })();
 
-process.on("SIGINT", async () => {
+const stopMessenger = async () => {
   await messenger.stop();
-});
+  logger.info("Bot stopped!");
+};
+const registerStop = (signal: string) => process.on(signal, stopMessenger);
 
-process.on("SIGTERM", async () => {
-  await messenger.stop();
-});
-
-process.on("SIGQUIT", async () => {
-  await messenger.stop();
-});
+["SIGINT", "SIGTERM", "SIGQUIT"].forEach(registerStop);

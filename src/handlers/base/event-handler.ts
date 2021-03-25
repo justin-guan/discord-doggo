@@ -5,7 +5,6 @@ import Client from "@model/base/client";
 import Member from "@model/base/member";
 import Message from "@model/base/message";
 import CommandExecutionDataImpl from "@store/commands/command-execution-data-impl";
-import { CustomCommandType } from "@store/models/custom-command";
 import Store from "@store/store";
 import path from "path";
 
