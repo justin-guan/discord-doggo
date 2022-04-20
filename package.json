@@ -47,7 +47,7 @@
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
     "bufferutil": "^4.0.2",
-    "convict": "^4.4.1",
+    "convict": "^6.2.2",
     "discord.js": "^12.4.1",
     "emoji-regex": "^7.0.3",
     "erlpack": "github:discord/erlpack",
