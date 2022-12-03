@@ -9,6 +9,7 @@ import messenger from "@messenger/discord/discord-messenger";
       databaseUrl: mongoDbUrl
     });
   } catch (e) {
+    logger.error(e);
     logger.error("Unable to start bot");
   }
 })();
